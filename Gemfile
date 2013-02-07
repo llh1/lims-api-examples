@@ -2,7 +2,7 @@ source "http://www.rubygems.org"
  
 gemspec
 
-gem 'lims-core', :path => '../lims-core'
+#gem 'lims-core', :path => '../lims-core'
 
 group :debugger do
   gem 'debugger'
