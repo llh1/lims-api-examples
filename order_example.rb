@@ -139,6 +139,7 @@ parameters = {:order => {:user_uuid => "user uuid",
                                       "TubeOut" => [{:uuid => tubeout_uuid}],
                                       "EpA" => [{:uuid => epa_uuid}]}}}
 response = post("orders", parameters) 
+order_uuid = "{order_uuid}" # for --no-request use
 if response
   result = JSON.parse(response.body)
   order_uuid = result["order"]["uuid"]
