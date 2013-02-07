@@ -89,7 +89,7 @@ if send_request?
 end 
 
 # Create a spin column <Spin>
-parameters = {:tube => {}}
+parameters = {:spin_column => {}}
 response = post("spin_columns", parameters)
 if send_request?
   spin = JSON.parse(response)
@@ -139,7 +139,10 @@ parameters = {:order => {:user_uuid => "user uuid",
                                       "TubeOut" => [{:uuid => tubeout_uuid}],
                                       "EpA" => [{:uuid => epa_uuid}]}}}
 response = post("orders", parameters) 
-order_uuid = nil 
+if response
+  result = JSON.parse(response.body)
+  order_uuid = result["order"]["uuid"]
+end
 
 # The initial order status is set to draft.
 # We need to first set it to pending, meaning it's validated
