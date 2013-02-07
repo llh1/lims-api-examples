@@ -170,6 +170,22 @@ parameters = {:items => {"Spin" => {spin_uuid => {:event => :start}},
                          "TubeOut" => {tubeout_uuid => {:event => :start}}}}
 response = post(order_uuid, parameters)
 
+# Do the work: transfer from tube Input 
+# to tube TubeOut and spin column Spin
+
+puts "DO THE WORK: TRANSFER FROM TUBE INPUT TO TUBE TUBEOUT AND SPIN COLUMN"
+puts
+
+parameters = {:transfer_tubes_to_tubes => {:transfers => [{:source_uuid => input_uuid,
+                                                           :target_uuid => tubeout_uuid,
+                                                           :fraction => 0.5,
+                                                           :aliquot_type => "NA"},
+                                                           {:source_uuid => input_uuid,
+                                                            :target_uuid => spin_uuid,
+                                                            :fraction => 0.5,
+                                                            :aliquot_type => "DNA"}]}}
+response = post("actions/transfer_tubes_to_tubes", parameters)
+
 # Spin and TubeOut are done. 
 # Input is unused.
 
@@ -181,6 +197,17 @@ parameters = {:items => {"Spin" => {spin_uuid => {:event => :complete}},
                          "TubeOut" => {tubeout_uuid => {:event => :complete}},
                          "Input" => {input_uuid => {:event => :unused}}}}
 response = post(order_uuid, parameters)
+
+# Do the work: transfer from spin column to tube EpA
+
+puts "DO THE WORK: TRANSFER FRON SPIN COLUMN TO TUBE EPA"
+puts
+
+parameters = {:transfer_tubes_to_tubes => {:transfers => [{:source_uuid => spin_uuid,
+                                                           :target_uuid => epa_uuid,
+                                                           :fraction => 1.0,
+                                                           :aliquot_type => "NA"}]}}
+response = post("actions/transfer_tubes_to_tubes", parameters)
 
 # EpA is done.
 # Spin is unused.
