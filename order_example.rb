@@ -5,6 +5,12 @@ API_ROOT = "http://localhost:9292"
 HEADERS = {'Content-Type' => 'application/json', 'Accept' => 'application/json'}
 API = RestClient::Resource.new(API_ROOT)
 
+# ====
+# Note:
+# The script can be called with the option --no-request to 
+# just print the JSON parameters for each request.
+# ====
+
 # ================
 # Helper functions
 # ================
