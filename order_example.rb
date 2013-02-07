@@ -258,7 +258,6 @@ parameters = {:search => {:description => "search tube by barcode",
                           :criteria => {:label => {:type => "sanger-barcode",
                                                    :value => "JKL1234"}}}}
 response = post("searches", parameters)
-tube_uuid = response[:uuid] if response
 
 # The post request only creates the search.
 # The following get the uuid of the found tube 
