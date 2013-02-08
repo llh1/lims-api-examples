@@ -1,0 +1,162 @@
+CREATE THE RESOURCES NEEDED IN THE ORDER WORKFLOW
+=================================================
+
+Request to http://localhost:9292/tubes
+with the following JSON:
+{"tube":{}}
+and get the response:
+{"tube":{"actions":{"read":"http://localhost:9292/e8e6c920-5413-0130-8bd4-282066132de2","create":"http://localhost:9292/e8e6c920-5413-0130-8bd4-282066132de2","update":"http://localhost:9292/e8e6c920-5413-0130-8bd4-282066132de2","delete":"http://localhost:9292/e8e6c920-5413-0130-8bd4-282066132de2"},"uuid":"e8e6c920-5413-0130-8bd4-282066132de2","aliquots":[]}}
+
+Request to http://localhost:9292/tubes
+with the following JSON:
+{"tube":{}}
+and get the response:
+{"tube":{"actions":{"read":"http://localhost:9292/e8ea7860-5413-0130-8bd4-282066132de2","create":"http://localhost:9292/e8ea7860-5413-0130-8bd4-282066132de2","update":"http://localhost:9292/e8ea7860-5413-0130-8bd4-282066132de2","delete":"http://localhost:9292/e8ea7860-5413-0130-8bd4-282066132de2"},"uuid":"e8ea7860-5413-0130-8bd4-282066132de2","aliquots":[]}}
+
+Request to http://localhost:9292/tubes
+with the following JSON:
+{"tube":{}}
+and get the response:
+{"tube":{"actions":{"read":"http://localhost:9292/e8fc28f0-5413-0130-8bd4-282066132de2","create":"http://localhost:9292/e8fc28f0-5413-0130-8bd4-282066132de2","update":"http://localhost:9292/e8fc28f0-5413-0130-8bd4-282066132de2","delete":"http://localhost:9292/e8fc28f0-5413-0130-8bd4-282066132de2"},"uuid":"e8fc28f0-5413-0130-8bd4-282066132de2","aliquots":[]}}
+
+Request to http://localhost:9292/spin_columns
+with the following JSON:
+{"spin_column":{}}
+and get the response:
+{"spin_column":{"actions":{"read":"http://localhost:9292/e928b580-5413-0130-8bd4-282066132de2","create":"http://localhost:9292/e928b580-5413-0130-8bd4-282066132de2","update":"http://localhost:9292/e928b580-5413-0130-8bd4-282066132de2","delete":"http://localhost:9292/e928b580-5413-0130-8bd4-282066132de2"},"uuid":"e928b580-5413-0130-8bd4-282066132de2","aliquots":[]}}
+
+
+BARCODE RESOURCES
+=================
+
+Request to http://localhost:9292/labellables
+with the following JSON:
+{"labellable":{"name":"e8e6c920-5413-0130-8bd4-282066132de2","type":"resource","labels":{"front barcode":{"value":"ABC1234","type":"sanger-barcode"}}}}
+and get the response:
+{"labellable":{"actions":{"read":"http://localhost:9292/e94ce620-5413-0130-8bd4-282066132de2","create":"http://localhost:9292/e94ce620-5413-0130-8bd4-282066132de2","update":"http://localhost:9292/e94ce620-5413-0130-8bd4-282066132de2","delete":"http://localhost:9292/e94ce620-5413-0130-8bd4-282066132de2"},"uuid":"e94ce620-5413-0130-8bd4-282066132de2","name":"e8e6c920-5413-0130-8bd4-282066132de2","type":"resource","labels":{"front barcode":{"value":"ABC1234","type":"sanger-barcode"}}}}
+
+Request to http://localhost:9292/labellables
+with the following JSON:
+{"labellable":{"name":"e928b580-5413-0130-8bd4-282066132de2","type":"resource","labels":{"front barcode":{"value":"DEF1234","type":"sanger-barcode"}}}}
+and get the response:
+{"labellable":{"actions":{"read":"http://localhost:9292/e969c840-5413-0130-8bd4-282066132de2","create":"http://localhost:9292/e969c840-5413-0130-8bd4-282066132de2","update":"http://localhost:9292/e969c840-5413-0130-8bd4-282066132de2","delete":"http://localhost:9292/e969c840-5413-0130-8bd4-282066132de2"},"uuid":"e969c840-5413-0130-8bd4-282066132de2","name":"e928b580-5413-0130-8bd4-282066132de2","type":"resource","labels":{"front barcode":{"value":"DEF1234","type":"sanger-barcode"}}}}
+
+Request to http://localhost:9292/labellables
+with the following JSON:
+{"labellable":{"name":"e8ea7860-5413-0130-8bd4-282066132de2","type":"resource","labels":{"front barcode":{"value":"GHI1234","type":"sanger-barcode"}}}}
+and get the response:
+{"labellable":{"actions":{"read":"http://localhost:9292/e98a2000-5413-0130-8bd4-282066132de2","create":"http://localhost:9292/e98a2000-5413-0130-8bd4-282066132de2","update":"http://localhost:9292/e98a2000-5413-0130-8bd4-282066132de2","delete":"http://localhost:9292/e98a2000-5413-0130-8bd4-282066132de2"},"uuid":"e98a2000-5413-0130-8bd4-282066132de2","name":"e8ea7860-5413-0130-8bd4-282066132de2","type":"resource","labels":{"front barcode":{"value":"GHI1234","type":"sanger-barcode"}}}}
+
+Request to http://localhost:9292/labellables
+with the following JSON:
+{"labellable":{"name":"e8fc28f0-5413-0130-8bd4-282066132de2","type":"resource","labels":{"front barcode":{"value":"JKL1234","type":"sanger-barcode"}}}}
+and get the response:
+{"labellable":{"actions":{"read":"http://localhost:9292/e9a72b80-5413-0130-8bd4-282066132de2","create":"http://localhost:9292/e9a72b80-5413-0130-8bd4-282066132de2","update":"http://localhost:9292/e9a72b80-5413-0130-8bd4-282066132de2","delete":"http://localhost:9292/e9a72b80-5413-0130-8bd4-282066132de2"},"uuid":"e9a72b80-5413-0130-8bd4-282066132de2","name":"e8fc28f0-5413-0130-8bd4-282066132de2","type":"resource","labels":{"front barcode":{"value":"JKL1234","type":"sanger-barcode"}}}}
+
+
+ORDER WORKFLOW
+==============
+
+INITIAL STATE: CREATE THE ORDER AND SETUP THE SOURCE AND THE TARGETS
+
+Request to http://localhost:9292/orders
+with the following JSON:
+{"order":{"user_uuid":"66666666-2222-4444-9999-000000000000","study_uuid":"55555555-2222-3333-6666-777777777777","pipeline":"pipeline 1","cost_code":"cost code A","sources":{"Input":["e8e6c920-5413-0130-8bd4-282066132de2"]},"targets":{"Spin":["e928b580-5413-0130-8bd4-282066132de2"],"TubeOut":["e8ea7860-5413-0130-8bd4-282066132de2"],"EpA":["e8fc28f0-5413-0130-8bd4-282066132de2"]}}}
+and get the response:
+{"order":{"actions":{"read":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2","create":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2","update":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2","delete":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2"},"uuid":"e9e1a700-5413-0130-8bd4-282066132de2","creator":"#<Lims::Core::Organization::User:0x007fce694ddd18>","pipeline":"pipeline 1","status":"draft","parameters":{},"state":{},"study":"#<Lims::Core::Organization::Study:0x007fce68bd8c90>","cost_code":"cost code A","creator":{"actions":{"read":"http://localhost:9292/66666666-2222-4444-9999-000000000000","create":"http://localhost:9292/66666666-2222-4444-9999-000000000000","update":"http://localhost:9292/66666666-2222-4444-9999-000000000000","delete":"http://localhost:9292/66666666-2222-4444-9999-000000000000"},"uuid":"66666666-2222-4444-9999-000000000000"},"study":{"actions":{"read":"http://localhost:9292/55555555-2222-3333-6666-777777777777","create":"http://localhost:9292/55555555-2222-3333-6666-777777777777","update":"http://localhost:9292/55555555-2222-3333-6666-777777777777","delete":"http://localhost:9292/55555555-2222-3333-6666-777777777777"},"uuid":"55555555-2222-3333-6666-777777777777"},"items":{"Input":[{"uuid":"e8e6c920-5413-0130-8bd4-282066132de2","status":"done"}],"Spin":[{"uuid":"e928b580-5413-0130-8bd4-282066132de2","status":"pending"}],"TubeOut":[{"uuid":"e8ea7860-5413-0130-8bd4-282066132de2","status":"pending"}],"EpA":[{"uuid":"e8fc28f0-5413-0130-8bd4-282066132de2","status":"pending"}]}}}
+
+CHANGE THE ORDER STATUS TO PENDING
+
+Request to http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2
+with the following JSON:
+{"event":"build"}
+and get the response:
+{"order":{"actions":{"read":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2","create":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2","update":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2","delete":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2"},"uuid":"e9e1a700-5413-0130-8bd4-282066132de2","creator":"#<Lims::Core::Organization::User:0x007fce68d85d18>","pipeline":"pipeline 1","status":"pending","parameters":{},"state":{},"study":"#<Lims::Core::Organization::Study:0x007fce68b4f530>","cost_code":"cost code A","creator":{"actions":{"read":"http://localhost:9292/66666666-2222-4444-9999-000000000000","create":"http://localhost:9292/66666666-2222-4444-9999-000000000000","update":"http://localhost:9292/66666666-2222-4444-9999-000000000000","delete":"http://localhost:9292/66666666-2222-4444-9999-000000000000"},"uuid":"66666666-2222-4444-9999-000000000000"},"study":{"actions":{"read":"http://localhost:9292/55555555-2222-3333-6666-777777777777","create":"http://localhost:9292/55555555-2222-3333-6666-777777777777","update":"http://localhost:9292/55555555-2222-3333-6666-777777777777","delete":"http://localhost:9292/55555555-2222-3333-6666-777777777777"},"uuid":"55555555-2222-3333-6666-777777777777"},"items":{"Input":[{"uuid":"e8e6c920-5413-0130-8bd4-282066132de2","status":"done"}],"Spin":[{"uuid":"e928b580-5413-0130-8bd4-282066132de2","status":"pending"}],"TubeOut":[{"uuid":"e8ea7860-5413-0130-8bd4-282066132de2","status":"pending"}],"EpA":[{"uuid":"e8fc28f0-5413-0130-8bd4-282066132de2","status":"pending"}]}}}
+
+CHANGE THE ORDER STATUS TO IN_PROGRESS
+
+Request to http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2
+with the following JSON:
+{"event":"start"}
+and get the response:
+{"order":{"actions":{"read":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2","create":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2","update":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2","delete":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2"},"uuid":"e9e1a700-5413-0130-8bd4-282066132de2","creator":"#<Lims::Core::Organization::User:0x007fce68f15278>","pipeline":"pipeline 1","status":"in_progress","parameters":{},"state":{},"study":"#<Lims::Core::Organization::Study:0x007fce68f1b8a8>","cost_code":"cost code A","creator":{"actions":{"read":"http://localhost:9292/66666666-2222-4444-9999-000000000000","create":"http://localhost:9292/66666666-2222-4444-9999-000000000000","update":"http://localhost:9292/66666666-2222-4444-9999-000000000000","delete":"http://localhost:9292/66666666-2222-4444-9999-000000000000"},"uuid":"66666666-2222-4444-9999-000000000000"},"study":{"actions":{"read":"http://localhost:9292/55555555-2222-3333-6666-777777777777","create":"http://localhost:9292/55555555-2222-3333-6666-777777777777","update":"http://localhost:9292/55555555-2222-3333-6666-777777777777","delete":"http://localhost:9292/55555555-2222-3333-6666-777777777777"},"uuid":"55555555-2222-3333-6666-777777777777"},"items":{"Input":[{"uuid":"e8e6c920-5413-0130-8bd4-282066132de2","status":"done"}],"Spin":[{"uuid":"e928b580-5413-0130-8bd4-282066132de2","status":"pending"}],"TubeOut":[{"uuid":"e8ea7860-5413-0130-8bd4-282066132de2","status":"pending"}],"EpA":[{"uuid":"e8fc28f0-5413-0130-8bd4-282066132de2","status":"pending"}]}}}
+
+CHANGE THE SPIN AND TUBEOUT STATUS TO IN_PROGRESS
+
+Request to http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2
+with the following JSON:
+{"items":{"Spin":{"e928b580-5413-0130-8bd4-282066132de2":{"event":"start"}},"TubeOut":{"e8ea7860-5413-0130-8bd4-282066132de2":{"event":"start"}}}}
+and get the response:
+{"order":{"actions":{"read":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2","create":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2","update":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2","delete":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2"},"uuid":"e9e1a700-5413-0130-8bd4-282066132de2","creator":"#<Lims::Core::Organization::User:0x007fce68f880c0>","pipeline":"pipeline 1","status":"in_progress","parameters":{},"state":{},"study":"#<Lims::Core::Organization::Study:0x007fce68f86568>","cost_code":"cost code A","creator":{"actions":{"read":"http://localhost:9292/66666666-2222-4444-9999-000000000000","create":"http://localhost:9292/66666666-2222-4444-9999-000000000000","update":"http://localhost:9292/66666666-2222-4444-9999-000000000000","delete":"http://localhost:9292/66666666-2222-4444-9999-000000000000"},"uuid":"66666666-2222-4444-9999-000000000000"},"study":{"actions":{"read":"http://localhost:9292/55555555-2222-3333-6666-777777777777","create":"http://localhost:9292/55555555-2222-3333-6666-777777777777","update":"http://localhost:9292/55555555-2222-3333-6666-777777777777","delete":"http://localhost:9292/55555555-2222-3333-6666-777777777777"},"uuid":"55555555-2222-3333-6666-777777777777"},"items":{"Input":[{"uuid":"e8e6c920-5413-0130-8bd4-282066132de2","status":"done"}],"Spin":[{"uuid":"e928b580-5413-0130-8bd4-282066132de2","status":"in_progress"}],"TubeOut":[{"uuid":"e8ea7860-5413-0130-8bd4-282066132de2","status":"in_progress"}],"EpA":[{"uuid":"e8fc28f0-5413-0130-8bd4-282066132de2","status":"pending"}]}}}
+
+DO THE WORK: TRANSFER FROM TUBE INPUT TO TUBE TUBEOUT AND SPIN COLUMN
+
+CHANGE THE SPIN AND TUBEOUT STATUS TO DONE
+AND CHANGE THE INPUT STATUS TO UNUSED
+
+Request to http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2
+with the following JSON:
+{"items":{"Spin":{"e928b580-5413-0130-8bd4-282066132de2":{"event":"complete"}},"TubeOut":{"e8ea7860-5413-0130-8bd4-282066132de2":{"event":"complete"}}}}
+and get the response:
+{"order":{"actions":{"read":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2","create":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2","update":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2","delete":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2"},"uuid":"e9e1a700-5413-0130-8bd4-282066132de2","creator":"#<Lims::Core::Organization::User:0x007fce69768010>","pipeline":"pipeline 1","status":"in_progress","parameters":{},"state":{},"study":"#<Lims::Core::Organization::Study:0x007fce697664e0>","cost_code":"cost code A","creator":{"actions":{"read":"http://localhost:9292/66666666-2222-4444-9999-000000000000","create":"http://localhost:9292/66666666-2222-4444-9999-000000000000","update":"http://localhost:9292/66666666-2222-4444-9999-000000000000","delete":"http://localhost:9292/66666666-2222-4444-9999-000000000000"},"uuid":"66666666-2222-4444-9999-000000000000"},"study":{"actions":{"read":"http://localhost:9292/55555555-2222-3333-6666-777777777777","create":"http://localhost:9292/55555555-2222-3333-6666-777777777777","update":"http://localhost:9292/55555555-2222-3333-6666-777777777777","delete":"http://localhost:9292/55555555-2222-3333-6666-777777777777"},"uuid":"55555555-2222-3333-6666-777777777777"},"items":{"Input":[{"uuid":"e8e6c920-5413-0130-8bd4-282066132de2","status":"done"}],"Spin":[{"uuid":"e928b580-5413-0130-8bd4-282066132de2","status":"done"}],"TubeOut":[{"uuid":"e8ea7860-5413-0130-8bd4-282066132de2","status":"done"}],"EpA":[{"uuid":"e8fc28f0-5413-0130-8bd4-282066132de2","status":"pending"}]}}}
+
+DO THE WORK: TRANSFER FRON SPIN COLUMN TO TUBE EPA
+
+CHANGE EPA STATUS TO DONE AND SPIN STATUS TO UNUSED
+
+Request to http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2
+with the following JSON:
+{"items":{"EpA":{"e8fc28f0-5413-0130-8bd4-282066132de2":{"event":"complete"}}}}
+and get the response:
+{"order":{"actions":{"read":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2","create":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2","update":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2","delete":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2"},"uuid":"e9e1a700-5413-0130-8bd4-282066132de2","creator":"#<Lims::Core::Organization::User:0x007fce69617d28>","pipeline":"pipeline 1","status":"in_progress","parameters":{},"state":{},"study":"#<Lims::Core::Organization::Study:0x007fce69616248>","cost_code":"cost code A","creator":{"actions":{"read":"http://localhost:9292/66666666-2222-4444-9999-000000000000","create":"http://localhost:9292/66666666-2222-4444-9999-000000000000","update":"http://localhost:9292/66666666-2222-4444-9999-000000000000","delete":"http://localhost:9292/66666666-2222-4444-9999-000000000000"},"uuid":"66666666-2222-4444-9999-000000000000"},"study":{"actions":{"read":"http://localhost:9292/55555555-2222-3333-6666-777777777777","create":"http://localhost:9292/55555555-2222-3333-6666-777777777777","update":"http://localhost:9292/55555555-2222-3333-6666-777777777777","delete":"http://localhost:9292/55555555-2222-3333-6666-777777777777"},"uuid":"55555555-2222-3333-6666-777777777777"},"items":{"Input":[{"uuid":"e8e6c920-5413-0130-8bd4-282066132de2","status":"done"}],"Spin":[{"uuid":"e928b580-5413-0130-8bd4-282066132de2","status":"done"}],"TubeOut":[{"uuid":"e8ea7860-5413-0130-8bd4-282066132de2","status":"done"}],"EpA":[{"uuid":"e8fc28f0-5413-0130-8bd4-282066132de2","status":"done"}]}}}
+
+
+SEARCHES
+========
+
+SEARCH ALL THE TUBES WITH: ROLE=INPUT AND STATUS=DONE
+
+Request to http://localhost:9292/searches
+with the following JSON:
+{"search":{"description":"search input tubes with done status","model":"tube","criteria":{"order":{"item":{"role":"Input","status":"done"}}}}}
+and get the response:
+{"search":{"actions":{"read":"http://localhost:9292/eae24900-5413-0130-8bd4-282066132de2","first":"http://localhost:9292/eae24900-5413-0130-8bd4-282066132de2/page=1","last":"http://localhost:9292/eae24900-5413-0130-8bd4-282066132de2/page=-1"},"uuid":"eae24900-5413-0130-8bd4-282066132de2"}}
+
+Request to http://localhost:9292//eae24900-5413-0130-8bd4-282066132de2/page=1
+and get the response:
+{"actions":{"read":"http://localhost:9292/tubes/page=1","first":"http://localhost:9292/tubes/page=1","last":"http://localhost:9292/tubes/page=-1"},"size":1,"tubes":[{"tube":{"actions":{"read":"http://localhost:9292/e8e6c920-5413-0130-8bd4-282066132de2","create":"http://localhost:9292/e8e6c920-5413-0130-8bd4-282066132de2","update":"http://localhost:9292/e8e6c920-5413-0130-8bd4-282066132de2","delete":"http://localhost:9292/e8e6c920-5413-0130-8bd4-282066132de2"},"uuid":"e8e6c920-5413-0130-8bd4-282066132de2","aliquots":[],"labels":{"actions":{"read":"http://localhost:9292/e94ce620-5413-0130-8bd4-282066132de2","create":"http://localhost:9292/e94ce620-5413-0130-8bd4-282066132de2","update":"http://localhost:9292/e94ce620-5413-0130-8bd4-282066132de2","delete":"http://localhost:9292/e94ce620-5413-0130-8bd4-282066132de2"},"uuid":"e94ce620-5413-0130-8bd4-282066132de2","front barcode":{"value":"ABC1234","type":"sanger-barcode"}}}}]}
+
+SEARCH ALL THE ORDERS WHICH HAVE ITEMS WITH: ROLE=INPUT AND STATUS=DONE
+
+Request to http://localhost:9292/searches
+with the following JSON:
+{"search":{"description":"search orders with input tubes with a done status","model":"order","criteria":{"item":{"role":"Input","status":"done"}}}}
+and get the response:
+{"search":{"actions":{"read":"http://localhost:9292/eb1bd320-5413-0130-8bd4-282066132de2","first":"http://localhost:9292/eb1bd320-5413-0130-8bd4-282066132de2/page=1","last":"http://localhost:9292/eb1bd320-5413-0130-8bd4-282066132de2/page=-1"},"uuid":"eb1bd320-5413-0130-8bd4-282066132de2"}}
+
+Request to http://localhost:9292//eb1bd320-5413-0130-8bd4-282066132de2/page=1
+and get the response:
+{"actions":{"read":"http://localhost:9292/orders/page=1","first":"http://localhost:9292/orders/page=1","last":"http://localhost:9292/orders/page=-1"},"size":1,"orders":[{"order":{"actions":{"read":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2","create":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2","update":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2","delete":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2"},"uuid":"e9e1a700-5413-0130-8bd4-282066132de2","creator":"#<Lims::Core::Organization::User:0x007fce68a9afe0>","pipeline":"pipeline 1","status":"in_progress","parameters":{},"state":{},"study":"#<Lims::Core::Organization::Study:0x007fce68a934c0>","cost_code":"cost code A","creator":{"actions":{"read":"http://localhost:9292/66666666-2222-4444-9999-000000000000","create":"http://localhost:9292/66666666-2222-4444-9999-000000000000","update":"http://localhost:9292/66666666-2222-4444-9999-000000000000","delete":"http://localhost:9292/66666666-2222-4444-9999-000000000000"},"uuid":"66666666-2222-4444-9999-000000000000"},"study":{"actions":{"read":"http://localhost:9292/55555555-2222-3333-6666-777777777777","create":"http://localhost:9292/55555555-2222-3333-6666-777777777777","update":"http://localhost:9292/55555555-2222-3333-6666-777777777777","delete":"http://localhost:9292/55555555-2222-3333-6666-777777777777"},"uuid":"55555555-2222-3333-6666-777777777777"},"items":{"Input":[{"uuid":"e8e6c920-5413-0130-8bd4-282066132de2","status":"done"}],"Spin":[{"uuid":"e928b580-5413-0130-8bd4-282066132de2","status":"done"}],"TubeOut":[{"uuid":"e8ea7860-5413-0130-8bd4-282066132de2","status":"done"}],"EpA":[{"uuid":"e8fc28f0-5413-0130-8bd4-282066132de2","status":"done"}]}}}]}
+
+SEARCH ALL THE ORDERS WHICH HAVE A TUBE WITH: BARCODE=JKL1234
+
+Request to http://localhost:9292/searches
+with the following JSON:
+{"search":{"description":"search tube by barcode","model":"tube","criteria":{"label":{"type":"sanger-barcode","value":"JKL1234"}}}}
+and get the response:
+{"search":{"actions":{"read":"http://localhost:9292/eb613ef0-5413-0130-8bd4-282066132de2","first":"http://localhost:9292/eb613ef0-5413-0130-8bd4-282066132de2/page=1","last":"http://localhost:9292/eb613ef0-5413-0130-8bd4-282066132de2/page=-1"},"uuid":"eb613ef0-5413-0130-8bd4-282066132de2"}}
+
+Request to http://localhost:9292//eb613ef0-5413-0130-8bd4-282066132de2/page=1
+and get the response:
+{"actions":{"read":"http://localhost:9292/tubes/page=1","first":"http://localhost:9292/tubes/page=1","last":"http://localhost:9292/tubes/page=-1"},"size":1,"tubes":[{"tube":{"actions":{"read":"http://localhost:9292/e8fc28f0-5413-0130-8bd4-282066132de2","create":"http://localhost:9292/e8fc28f0-5413-0130-8bd4-282066132de2","update":"http://localhost:9292/e8fc28f0-5413-0130-8bd4-282066132de2","delete":"http://localhost:9292/e8fc28f0-5413-0130-8bd4-282066132de2"},"uuid":"e8fc28f0-5413-0130-8bd4-282066132de2","aliquots":[],"labels":{"actions":{"read":"http://localhost:9292/e9a72b80-5413-0130-8bd4-282066132de2","create":"http://localhost:9292/e9a72b80-5413-0130-8bd4-282066132de2","update":"http://localhost:9292/e9a72b80-5413-0130-8bd4-282066132de2","delete":"http://localhost:9292/e9a72b80-5413-0130-8bd4-282066132de2"},"uuid":"e9a72b80-5413-0130-8bd4-282066132de2","front barcode":{"value":"JKL1234","type":"sanger-barcode"}}}}]}
+
+Request to http://localhost:9292/searches
+with the following JSON:
+{"search":{"description":"search orders containing barcoded JKL1234 tube","model":"order","criteria":{"item":{"uuid":"e8fc28f0-5413-0130-8bd4-282066132de2"}}}}
+and get the response:
+{"search":{"actions":{"read":"http://localhost:9292/eb892300-5413-0130-8bd4-282066132de2","first":"http://localhost:9292/eb892300-5413-0130-8bd4-282066132de2/page=1","last":"http://localhost:9292/eb892300-5413-0130-8bd4-282066132de2/page=-1"},"uuid":"eb892300-5413-0130-8bd4-282066132de2"}}
+
+Request to http://localhost:9292//eb892300-5413-0130-8bd4-282066132de2/page=1
+and get the response:
+{"actions":{"read":"http://localhost:9292/orders/page=1","first":"http://localhost:9292/orders/page=1","last":"http://localhost:9292/orders/page=-1"},"size":1,"orders":[{"order":{"actions":{"read":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2","create":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2","update":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2","delete":"http://localhost:9292/e9e1a700-5413-0130-8bd4-282066132de2"},"uuid":"e9e1a700-5413-0130-8bd4-282066132de2","creator":"#<Lims::Core::Organization::User:0x007fce69431a90>","pipeline":"pipeline 1","status":"in_progress","parameters":{},"state":{},"study":"#<Lims::Core::Organization::Study:0x007fce6942f650>","cost_code":"cost code A","creator":{"actions":{"read":"http://localhost:9292/66666666-2222-4444-9999-000000000000","create":"http://localhost:9292/66666666-2222-4444-9999-000000000000","update":"http://localhost:9292/66666666-2222-4444-9999-000000000000","delete":"http://localhost:9292/66666666-2222-4444-9999-000000000000"},"uuid":"66666666-2222-4444-9999-000000000000"},"study":{"actions":{"read":"http://localhost:9292/55555555-2222-3333-6666-777777777777","create":"http://localhost:9292/55555555-2222-3333-6666-777777777777","update":"http://localhost:9292/55555555-2222-3333-6666-777777777777","delete":"http://localhost:9292/55555555-2222-3333-6666-777777777777"},"uuid":"55555555-2222-3333-6666-777777777777"},"items":{"Input":[{"uuid":"e8e6c920-5413-0130-8bd4-282066132de2","status":"done"}],"Spin":[{"uuid":"e928b580-5413-0130-8bd4-282066132de2","status":"done"}],"TubeOut":[{"uuid":"e8ea7860-5413-0130-8bd4-282066132de2","status":"done"}],"EpA":[{"uuid":"e8fc28f0-5413-0130-8bd4-282066132de2","status":"done"}]}}}]}
+
