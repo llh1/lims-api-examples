@@ -209,16 +209,15 @@ response = put(order_uuid, parameters)
 puts "DO THE WORK: TRANSFER FROM TUBE INPUT TO TUBE TUBEOUT AND SPIN COLUMN"
 puts
 
-parameters = {:transfer_tubes_to_tubes => {:transfers => [{:source => input_uuid,
-                                                           :target => tubeout_uuid,
-                                                           :fraction => 0.5,
+parameters = {:transfer_tubes_to_tubes => {:transfers => [{:source_uuid => input_uuid,
+                                                           :target_uuid => tubeout_uuid,
+                                                           :amount => 5,
                                                            :aliquot_type => "NA"},
-                                                           {:source => input_uuid,
-                                                            :target => spin_uuid,
-                                                            :fraction => 0.5,
+                                                           {:source_uuid => input_uuid,
+                                                            :target_uuid => spin_uuid,
+                                                            :amount => 5,
                                                             :aliquot_type => "DNA"}]}}
-# TO DO:  Tubes to tubes action still needs to be tested in the API.
-#response = post("actions/transfer_tubes_to_tubes", parameters)
+response = post("actions/transfer_tubes_to_tubes", parameters)
 
 # Spin and TubeOut are done. 
 # Input is unused.
@@ -239,10 +238,9 @@ puts
 
 parameters = {:transfer_tubes_to_tubes => {:transfers => [{:source_uuid => spin_uuid,
                                                            :target_uuid => epa_uuid,
-                                                           :fraction => 1.0,
+                                                           :amount => 5,
                                                            :aliquot_type => "NA"}]}}
-# TO DO:  Tubes to tubes action still needs to be tested in the API.
-#response = post("actions/transfer_tubes_to_tubes", parameters)
+response = post("actions/transfer_tubes_to_tubes", parameters)
 
 # EpA is done.
 # Spin is unused.
