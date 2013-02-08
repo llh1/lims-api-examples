@@ -228,8 +228,8 @@ puts "AND CHANGE THE INPUT STATUS TO UNUSED"
 puts
 
 parameters = {:items => {"Spin" => {spin_uuid => {:event => :complete}},
-                         "TubeOut" => {tubeout_uuid => {:event => :complete}}}}
-                         # TO DO: "Input" => {input_uuid => {:event => :unused}}}} unused status not implemented yet
+                         "TubeOut" => {tubeout_uuid => {:event => :complete}},
+                         "Input" => {input_uuid => {:event => :unuse}}}}
 response = put(order_uuid, parameters)
 
 # Do the work: transfer from spin column to tube EpA
@@ -250,8 +250,8 @@ parameters = {:transfer_tubes_to_tubes => {:transfers => [{:source_uuid => spin_
 puts "CHANGE EPA STATUS TO DONE AND SPIN STATUS TO UNUSED"
 puts
 
-parameters = {:items => {"EpA" => {epa_uuid => {:event => :complete}}}}
-                         # TO DO "Spin" => {spin_uuid => {:event => :unused}}}}
+parameters = {:items => {"EpA" => {epa_uuid => {:event => :complete}},
+                         "Spin" => {spin_uuid => {:event => :unuse}}}}
 response = put(order_uuid, parameters)
 
 
