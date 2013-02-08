@@ -1,5 +1,8 @@
 require 'json'
 require 'rest_client'
+require 'lims-core'
+require 'lims-core/persistence/sequel'
+require 'sequel'
 
 API_ROOT = "http://localhost:9292"
 HEADERS = {'Content-Type' => 'application/json', 'Accept' => 'application/json'}
@@ -28,7 +31,14 @@ def post(url, parameters)
   response
 end
 
+def put(url, parameters)
+  response = API[url].put(parameters.to_json, HEADERS) if send_request? 
+  execution_trace(url, parameters, response)
+  response
+end
+
 def get(url)
+  url = url.sub(API_ROOT, '')
   response = API[url].get(HEADERS) if send_request?
   execution_trace(url, nil, response)
   response
@@ -113,6 +123,28 @@ puts
   response = post("labellables", parameters)
 end
 
+# ====================================
+# Needed in the order creation action:
+# - a valid study uuid
+# - a valid user uuid
+# Add a user and a study in the core
+# ===================================
+path_to_db = '/Users/llh1/Developer/lims-api/dev.db'
+store = Lims::Core::Persistence::Sequel::Store.new(Sequel.sqlite("file:#{path_to_db}"))
+user_uuid = "66666666-2222-4444-9999-000000000000"
+study_uuid = "55555555-2222-3333-6666-777777777777"
+
+store.with_session do |session|
+  user = Lims::Core::Organization::User.new
+  session << user
+  session.new_uuid_resource_for(user).send(:uuid=, user_uuid)
+
+  study = Lims::Core::Organization::Study.new
+  session << study
+  session.new_uuid_resource_for(study).send(:uuid=, study_uuid)
+end
+
+
 # ==============
 # Order workflow
 # ==============
@@ -130,14 +162,14 @@ puts
 puts "INITIAL STATE: CREATE THE ORDER AND SETUP THE SOURCE AND THE TARGETS"
 puts
 
-parameters = {:order => {:user_uuid => "user uuid",
-                         :study_uuid => "study uuid",
+parameters = {:order => {:user_uuid => user_uuid,
+                         :study_uuid => study_uuid,
                          :pipeline => "pipeline 1",
                          :cost_code => "cost code A",
-                         :sources => {"Input" => [{:uuid => input_uuid}]},
-                         :targets => {"Spin" => [{:uuid => spin_uuid}],
-                                      "TubeOut" => [{:uuid => tubeout_uuid}],
-                                      "EpA" => [{:uuid => epa_uuid}]}}}
+                         :sources => {"Input" => [input_uuid]},
+                         :targets => {"Spin" => [spin_uuid],
+                                      "TubeOut" => [tubeout_uuid],
+                                      "EpA" => [epa_uuid]}}}
 response = post("orders", parameters) 
 order_uuid = "{order_uuid}" # for --no-request use
 if response
@@ -154,13 +186,13 @@ puts "CHANGE THE ORDER STATUS TO PENDING"
 puts
 
 parameters = {:event => :build}
-response = post(order_uuid, parameters)
+response = put(order_uuid, parameters)
 
 puts "CHANGE THE ORDER STATUS TO IN_PROGRESS"
 puts
 
 parameters = {:event => :start}
-response = post(order_uuid, parameters)
+response = put(order_uuid, parameters)
 
 # Spin and TubeOut are in progress
 
@@ -169,7 +201,7 @@ puts
 
 parameters = {:items => {"Spin" => {spin_uuid => {:event => :start}},
                          "TubeOut" => {tubeout_uuid => {:event => :start}}}}
-response = post(order_uuid, parameters)
+response = put(order_uuid, parameters)
 
 # Do the work: transfer from tube Input 
 # to tube TubeOut and spin column Spin
@@ -177,15 +209,16 @@ response = post(order_uuid, parameters)
 puts "DO THE WORK: TRANSFER FROM TUBE INPUT TO TUBE TUBEOUT AND SPIN COLUMN"
 puts
 
-parameters = {:transfer_tubes_to_tubes => {:transfers => [{:source_uuid => input_uuid,
-                                                           :target_uuid => tubeout_uuid,
+parameters = {:transfer_tubes_to_tubes => {:transfers => [{:source => input_uuid,
+                                                           :target => tubeout_uuid,
                                                            :fraction => 0.5,
                                                            :aliquot_type => "NA"},
-                                                           {:source_uuid => input_uuid,
-                                                            :target_uuid => spin_uuid,
+                                                           {:source => input_uuid,
+                                                            :target => spin_uuid,
                                                             :fraction => 0.5,
                                                             :aliquot_type => "DNA"}]}}
-response = post("actions/transfer_tubes_to_tubes", parameters)
+# TO DO:  Tubes to tubes action still needs to be tested in the API.
+#response = post("actions/transfer_tubes_to_tubes", parameters)
 
 # Spin and TubeOut are done. 
 # Input is unused.
@@ -195,9 +228,9 @@ puts "AND CHANGE THE INPUT STATUS TO UNUSED"
 puts
 
 parameters = {:items => {"Spin" => {spin_uuid => {:event => :complete}},
-                         "TubeOut" => {tubeout_uuid => {:event => :complete}},
-                         "Input" => {input_uuid => {:event => :unused}}}}
-response = post(order_uuid, parameters)
+                         "TubeOut" => {tubeout_uuid => {:event => :complete}}}}
+                         # TO DO: "Input" => {input_uuid => {:event => :unused}}}} unused status not implemented yet
+response = put(order_uuid, parameters)
 
 # Do the work: transfer from spin column to tube EpA
 
@@ -208,7 +241,8 @@ parameters = {:transfer_tubes_to_tubes => {:transfers => [{:source_uuid => spin_
                                                            :target_uuid => epa_uuid,
                                                            :fraction => 1.0,
                                                            :aliquot_type => "NA"}]}}
-response = post("actions/transfer_tubes_to_tubes", parameters)
+# TO DO:  Tubes to tubes action still needs to be tested in the API.
+#response = post("actions/transfer_tubes_to_tubes", parameters)
 
 # EpA is done.
 # Spin is unused.
@@ -216,9 +250,9 @@ response = post("actions/transfer_tubes_to_tubes", parameters)
 puts "CHANGE EPA STATUS TO DONE AND SPIN STATUS TO UNUSED"
 puts
 
-parameters = {:items => {"EpA" => {epa_uuid => {:event => :complete}},
-                         "Spin" => {spin_uuid => {:event => :unused}}}}
-response = post(order_uuid, parameters)
+parameters = {:items => {"EpA" => {epa_uuid => {:event => :complete}}}}
+                         # TO DO "Spin" => {spin_uuid => {:event => :unused}}}}
+response = put(order_uuid, parameters)
 
 
 # ========
@@ -247,7 +281,7 @@ response = post("searches", parameters)
 # The following get the actual results of the search
 if response
   results = JSON.parse(response.body)
-  results_url = response["search"]["actions"]["first"]
+  results_url = results["search"]["actions"]["first"]
   response = get(results_url)
 end
 
@@ -268,7 +302,7 @@ response = post("searches", parameters)
 # The following get the actual results of the search
 if response
   results = JSON.parse(response.body)
-  results_url = response["search"]["actions"]["first"]
+  results_url = results["search"]["actions"]["first"]
   response = get(results_url)
 end
 
@@ -291,7 +325,7 @@ response = post("searches", parameters)
 # The following get the uuid of the found tube 
 if response
   results = JSON.parse(response.body)
-  results_url = response["search"]["actions"]["first"]
+  results_url = results["search"]["actions"]["first"]
   response = get(results_url)
   
   results = JSON.parse(response.body)
@@ -308,7 +342,7 @@ response = post("searches", parameters)
 # we get the results using the following:
 if response
   results = JSON.parse(response.body)
-  results_url = response["search"]["actions"]["first"]
+  results_url = results["search"]["actions"]["first"]
   response = get(results_url)
 end
 
