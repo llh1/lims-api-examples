@@ -64,7 +64,7 @@ end.call
 # ===============
 # Create the tube
 # ===============
-parameters = {:tube => {:type => TUBE_ALIQUOT_TYPE}}
+parameters = {:tube => {:aliquots => [{:type => TUBE_ALIQUOT_TYPE}]}}
 response = API["tubes"].post(parameters.to_json, HEADERS) 
 tube_uuid = JSON.parse(response)["tube"]["uuid"]
 
