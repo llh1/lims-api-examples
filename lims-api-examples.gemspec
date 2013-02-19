@@ -2,7 +2,7 @@
 $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
-  s.name        = "lims-messagebusclient"
+  s.name        = "lims-api-examples"
   s.version     = "0.1" 
   s.authors     = ["Loic Le Henaff"]
   s.email       = ["llh1@sanger.ac.uk"]
