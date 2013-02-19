@@ -16,14 +16,16 @@ require 'optparse'
 # Note:
 # The script can be called with the following parameters
 # -u "root url to s2 api server"
+# -v print the json for each request
 
-options = {}
+@options = {}
 OptionParser.new do |opts|
   opts.banner = "Usage: dna_rna_manual_extraction.rb [options]"
-  opts.on("-u", "--url [URL]") { |v| options[:url] = v}
+  opts.on("-u", "--url [URL]") { |v| @options[:url] = v}
+  opts.on("-v", "--verbose") { |v| @options[:verbose] = v}
 end.parse!
 
-API_ROOT = options[:url] || "http://localhost:9292"
+API_ROOT = @options[:url] || "http://localhost:9292"
 HEADERS = {'Content-Type' => 'application/json', 'Accept' => 'application/json'}
 API = RestClient::Resource.new(API_ROOT)
 
@@ -53,10 +55,12 @@ def get(url)
 end
 
 def dump_request(method, url, parameters, response)
-  puts "#{method.upcase} /#{url}"
-  puts "< #{parameters.to_json}" if parameters
-  puts "> #{response}" if response
-  puts
+  if @options[:verbose]
+    puts "#{method.upcase} /#{url}"
+    puts "< #{parameters.to_json}" if parameters
+    puts "> #{response}" if response
+    puts
+  end
 end
 
 # ============================
