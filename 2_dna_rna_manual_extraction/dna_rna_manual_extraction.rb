@@ -1,8 +1,6 @@
 require 'json'
 require 'rest_client'
 require 'lims-core'
-require 'lims-core/persistence/sequel'
-require 'sequel'
 require 'optparse'
 
 # This script goes through the different steps 
