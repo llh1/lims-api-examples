@@ -27,12 +27,14 @@ TUBE_ALIQUOT_TYPE = "NA+P"
 TUBE_BARCODE = "XX123456K"
 ORDER_PIPELINE = "DNA+RNA manual extraction"
 TUBE_ROLE = "tube_to_be_extracted"
+TUBE_ALIQUOT_QUANTITY = 10
+TUBE_SOLVENT_QUANTITY = 10
 
 # ==================
 # Clean the database
 # ==================
-%w{items orders batches searches labels labellables tube_aliquots 
-aliquots tubes studies users uuid_resources}.each do |table|
+%w{items orders batches searches labels labellables tube_aliquots spin_column_aliquots  
+aliquots tubes spin_columns studies users uuid_resources}.each do |table|
   DB[table.to_sym].delete
 end
 
@@ -61,7 +63,10 @@ module Lims::Core
   # ===============
   tube_uuid = STORE.with_session do |session|
     tube = Laboratory::Tube.new
-    tube << Laboratory::Aliquot.new(:type => TUBE_ALIQUOT_TYPE)
+    tube << Laboratory::Aliquot.new(:type => TUBE_ALIQUOT_TYPE,
+                                    :quantity => TUBE_ALIQUOT_QUANTITY)
+    tube << Laboratory::Aliquot.new(:type => Laboratory::Aliquot::Solvent,
+                                    :quantity => TUBE_SOLVENT_QUANTITY)
     session << tube
     tube_uuid = session.uuid_for!(tube)
     lambda { tube_uuid }
