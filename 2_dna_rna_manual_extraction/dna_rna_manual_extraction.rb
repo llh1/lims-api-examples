@@ -31,8 +31,10 @@ ALIQUOT_TYPE_RNA = "RNA"
 
 ROLE_TUBE_TO_BE_EXTRACTED = "tube_to_be_extracted"
 ROLE_BY_PRODUCT_TUBE = "by_product_tube"
-ROLE_BINDING_SPIN_COLUMN = "binding_spin_column"
-ROLE_ELUTION_SPIN_COLUMN = "elution_spin_column"
+ROLE_BINDING_SPIN_COLUMN_DNA = "binding_spin_column_dna"
+ROLE_ELUTION_SPIN_COLUMN_DNA = "elution_spin_column_dna"
+ROLE_BINDING_SPIN_COLUMN_RNA = "binding_spin_column_rna"
+ROLE_ELUTION_SPIN_COLUMN_RNA = "elution_spin_column_rna"
 ROLE_EXTRACTED_TUBE = "extracted_tube"
 
 
@@ -134,7 +136,8 @@ response = post("spin_columns", parameters)
 dna_spin_uuid = response["spin_column"]["uuid"]
 
 # Add the new spin column in the order and start it
-parameters = {:items => {ROLE_BINDING_SPIN_COLUMN => {dna_spin_uuid => {:event => :start}}}}
+parameters = {:items => {ROLE_BINDING_SPIN_COLUMN_DNA => {dna_spin_uuid => {:event => :start,
+                                                                            :batch_uuid => batch_uuid}}}}
 put(order_uuid, parameters)
 
 # Transfer from source tube into the spin column
@@ -147,7 +150,7 @@ parameters = {:transfer_tubes_to_tubes => {:transfers => [{
 post("actions/transfer_tubes_to_tubes", parameters)
 
 # Change the status of the spin column to done
-parameters = {:items => {ROLE_BINDING_SPIN_COLUMN => {dna_spin_uuid => {:event => :complete}}}}
+parameters = {:items => {ROLE_BINDING_SPIN_COLUMN_DNA => {dna_spin_uuid => {:event => :complete}}}}
 put(order_uuid, parameters)
 
 
@@ -157,11 +160,12 @@ put(order_uuid, parameters)
 # ==============================================
 
 # Add the spin column in the order under the role elution and start it
-parameters = {:items => {ROLE_ELUTION_SPIN_COLUMN => {dna_spin_uuid => {:event => :start}}}}
+parameters = {:items => {ROLE_ELUTION_SPIN_COLUMN_DNA => {dna_spin_uuid => {:event => :start,
+                                                                            :batch_uuid => batch_uuid}}}}
 put(order_uuid, parameters)
 
 # Change the status of the spin column to done
-parameters = {:items => {ROLE_ELUTION_SPIN_COLUMN => {dna_spin_uuid => {:event => :complete}}}}
+parameters = {:items => {ROLE_ELUTION_SPIN_COLUMN_DNA => {dna_spin_uuid => {:event => :complete}}}}
 put(order_uuid, parameters)
 
 # Create a new tube
@@ -198,7 +202,8 @@ response = post("tubes", parameters)
 rnap_tube_uuid = response["tube"]["uuid"]
 
 # Add the new tube in the order and start it
-parameters = {:items => {ROLE_BY_PRODUCT_TUBE => {rnap_tube_uuid => {:event => :start}}}}
+parameters = {:items => {ROLE_BY_PRODUCT_TUBE => {rnap_tube_uuid => {:event => :start,
+                                                                     :batch_uuid => batch_uuid}}}}
 put(order_uuid, parameters)
 
 # Transfer the source tube to rna+p tube
@@ -226,7 +231,8 @@ response = post("tubes", parameters)
 rnap_tube2_uuid = response["tube"]["uuid"]
 
 # Add the new tube in the order and start it
-parameters = {:items => {ROLE_TUBE_TO_BE_EXTRACTED => {rnap_tube2_uuid => {:event => :start}}}}
+parameters = {:items => {ROLE_TUBE_TO_BE_EXTRACTED => {rnap_tube2_uuid => {:event => :start,
+                                                                           :batch_uuid => batch_uuid}}}}
 put(order_uuid, parameters)
 
 # Transfer the by product tube to tube to be extracted
@@ -253,7 +259,8 @@ response = post("spin_columns", parameters)
 rna_spin_uuid = response["spin_column"]["uuid"]
 
 # Add the new spin column in the order and start it
-parameters = {:items => {ROLE_BINDING_SPIN_COLUMN => {rna_spin_uuid => {:event => :start}}}}
+parameters = {:items => {ROLE_BINDING_SPIN_COLUMN_RNA => {rna_spin_uuid => {:event => :start,
+                                                                            :batch_uuid => batch_uuid}}}}
 put(order_uuid, parameters)
 
 # Transfer from tube to be extracted into the spin column
@@ -266,7 +273,7 @@ parameters = {:transfer_tubes_to_tubes => {:transfers => [{
 post("actions/transfer_tubes_to_tubes", parameters)
 
 # Change the status of the spin column to done
-parameters = {:items => {ROLE_BINDING_SPIN_COLUMN => {rna_spin_uuid => {:event => :complete}}}}
+parameters = {:items => {ROLE_BINDING_SPIN_COLUMN_RNA => {rna_spin_uuid => {:event => :complete}}}}
 put(order_uuid, parameters)
 
 
@@ -276,11 +283,12 @@ put(order_uuid, parameters)
 # ==============================================
 
 # Add the spin column in the order under the role elution and start it
-parameters = {:items => {ROLE_ELUTION_SPIN_COLUMN => {rna_spin_uuid => {:event => :start}}}}
+parameters = {:items => {ROLE_ELUTION_SPIN_COLUMN_RNA => {rna_spin_uuid => {:event => :start,
+                                                                            :batch_uuid => batch_uuid}}}}
 put(order_uuid, parameters)
 
 # Change the status of the spin column to done
-parameters = {:items => {ROLE_ELUTION_SPIN_COLUMN => {rna_spin_uuid => {:event => :complete}}}}
+parameters = {:items => {ROLE_ELUTION_SPIN_COLUMN_RNA => {rna_spin_uuid => {:event => :complete}}}}
 put(order_uuid, parameters)
 
 # Create a new tube
