@@ -7,12 +7,6 @@ require 'optparse'
 
 # This script goes through the different steps 
 # of the DNA+RNA manual extraction pipeline.
-# It does the following steps:
-# 1 - Find a tube by barcode
-# 2 - Find the order by tube uuid and role
-# 3 - Check that no batch has been assigned to the tube
-# 4 - Create a new batch
-# 5 - Assign the batch uuid to the tube in the order item
 # Note:
 # The script can be called with the following parameters
 # -u "root url to s2 api server"
