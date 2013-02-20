@@ -1,5 +1,4 @@
 require 'json'
-require 'rest_client'
 require 'lims-core'
 require 'lims-core/persistence/sequel'
 require 'sequel'
@@ -12,19 +11,13 @@ require 'optparse'
 #   . barcode: "XX123456K"
 # Note:
 # The script can be called with the following parameters
-# -u "root url to s2 api server"
 # -d "connection string to the database"
 
 options = {}
 OptionParser.new do |opts|
   opts.banner = "Usage: setup_s2_environment.rb [options]"
-  opts.on("-u", "--url [URL]") { |v| options[:url] = v}
   opts.on("-d", "--db [DB]") { |v| options[:db] = v}
 end.parse!
-
-API_ROOT = options[:url] || "http://localhost:9292"
-HEADERS = {'Content-Type' => 'application/json', 'Accept' => 'application/json'}
-API = RestClient::Resource.new(API_ROOT)
 
 CONNECTION_STRING = options[:db] || "sqlite:///Users/llh1/Developer/lims-api/dev.db"
 DB = Sequel.connect(CONNECTION_STRING)
@@ -43,47 +36,57 @@ aliquots tubes studies users uuid_resources}.each do |table|
   DB[table.to_sym].delete
 end
 
-# ====================================
-# Needed in the order creation action:
-# - a valid study uuid
-# - a valid user uuid
-# Add a user and a study in the core
-# ===================================
-order_config = STORE.with_session do |session|
-  user = Lims::Core::Organization::User.new
-  session << user
-  user_uuid = session.uuid_for!(user)
+module Lims::Core
 
-  study = Lims::Core::Organization::Study.new
-  session << study
-  study_uuid = session.uuid_for!(study)
+  # ====================================
+  # Needed in the order creation action:
+  # - a valid study uuid
+  # - a valid user uuid
+  # Add a user and a study in the core
+  # ===================================
+  order_config = STORE.with_session do |session|
+    user = Organization::User.new
+    session << user
+    user_uuid = session.uuid_for!(user)
 
-  lambda { {:user_uuid => user_uuid, :study_uuid => study_uuid} }
-end.call
+    study = Organization::Study.new
+    session << study
+    study_uuid = session.uuid_for!(study)
 
-# ===============
-# Create the tube
-# ===============
-parameters = {:tube => {:aliquots => [{:type => TUBE_ALIQUOT_TYPE}]}}
-response = API["tubes"].post(parameters.to_json, HEADERS) 
-tube_uuid = JSON.parse(response)["tube"]["uuid"]
+    lambda { {:user_id => session.id_for(user), :study_id => session.id_for(study)} }
+  end.call
 
-# ================
-# Barcode the tube
-# ================
-parameters = {:labellable => {:name => tube_uuid,
-                              :type => "resource",
-                              :labels => {"barcode" => {:value => TUBE_BARCODE,
-                                                        :type => "sanger-barcode"}}}}
-API["labellables"].post(parameters.to_json, HEADERS)
+  # ===============
+  # Create the tube
+  # ===============
+  tube_uuid = STORE.with_session do |session|
+    tube = Laboratory::Tube.new
+    tube << Laboratory::Aliquot.new(:type => TUBE_ALIQUOT_TYPE)
+    session << tube
+    tube_uuid = session.uuid_for!(tube)
+    lambda { tube_uuid }
+  end.call
 
-# ==============================
-# Create the order with the tube
-# ==============================
-parameters = {:order => {:user_uuid => order_config[:user_uuid],
-                         :study_uuid => order_config[:study_uuid],
-                         :pipeline => ORDER_PIPELINE,
-                         :cost_code => "cost code",
-                         :sources => {TUBE_ROLE => [tube_uuid]}}}
-API["orders"].post(parameters.to_json, HEADERS)
+  # ================
+  # Barcode the tube
+  # ================
+  STORE.with_session do |session|
+    labellable = Laboratory::Labellable.new(:name => tube_uuid, :type => "resource")
+    labellable["barcode"] = Laboratory::Labellable::Label.new(:type => "sanger-barcode", :value => TUBE_BARCODE)
+    session << labellable
+    labellable_uuid = session.uuid_for!(labellable)
+  end
 
+  # ==============================
+  # Create the order with the tube
+  # ==============================
+  STORE.with_session do |session|
+    order = Organization::Order.new(:creator => session.user[order_config[:user_id]],
+                                    :study => session.study[order_config[:study_id]],
+                                    :pipeline => ORDER_PIPELINE,
+                                    :cost_code => "cost code")
+    order.add_source(TUBE_ROLE, [tube_uuid])
+    session << order
+    session.uuid_for!(order)
+  end
+end

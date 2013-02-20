@@ -31,6 +31,8 @@ API = RestClient::Resource.new(API_ROOT)
 
 TUBE_BARCODE = "XX123456K"
 TUBE_ROLE = "tube_to_be_extracted"
+TUBE_ALIQUOT_TYPE_RNAP = "RNA+P"
+SPIN_ALIQUOT_TYPE = "DNA"
 
 # ================
 # Helper functions
