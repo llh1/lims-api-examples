@@ -183,7 +183,7 @@ put(order_uuid, parameters)
 parameters = {:transfer_tubes_to_tubes => {:transfers => [{
   :source_uuid => dna_spin_uuid, 
   :target_uuid => dna_tube_uuid, 
-  :amount => 5, 
+  :fraction => 1, 
   :aliquot_type => ALIQUOT_TYPE_DNA
 }]}}
 post("actions/transfer_tubes_to_tubes", parameters)
@@ -249,7 +249,7 @@ put(order_uuid, parameters)
 parameters = {:transfer_tubes_to_tubes => {:transfers => [{
   :source_uuid => rnap_tube_uuid, 
   :target_uuid => rnap_tube2_uuid, 
-  :amount => 5
+  :fraction => 1
 }]}}
 post("actions/transfer_tubes_to_tubes", parameters)
 
@@ -281,7 +281,7 @@ put(order_uuid, parameters)
 parameters = {:transfer_tubes_to_tubes => {:transfers => [{
   :source_uuid => rnap_tube2_uuid, 
   :target_uuid => rna_spin_uuid, 
-  :amount => 1, 
+  :fraction => 1, 
   :aliquot_type => ALIQUOT_TYPE_RNA
 }]}}
 post("actions/transfer_tubes_to_tubes", parameters)
@@ -326,7 +326,7 @@ put(order_uuid, parameters)
 parameters = {:transfer_tubes_to_tubes => {:transfers => [{
   :source_uuid => rna_spin_uuid, 
   :target_uuid => rna_tube_uuid, 
-  :amount => 1, 
+  :fraction => 1,
   :aliquot_type => ALIQUOT_TYPE_RNA
 }]}}
 post("actions/transfer_tubes_to_tubes", parameters)
