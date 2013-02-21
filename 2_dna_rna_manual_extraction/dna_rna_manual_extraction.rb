@@ -166,6 +166,10 @@ put(order_uuid, parameters)
 parameters = {:items => {ROLE_ELUTION_SPIN_COLUMN_DNA => {dna_spin_uuid => {:event => :complete}}}}
 put(order_uuid, parameters)
 
+# Change the status of the binding_spin_column_dna to unused
+parameters = {:items => {ROLE_BINDING_SPIN_COLUMN_DNA => {dna_spin_uuid => {:event => :unuse}}}}
+put(order_uuid, parameters)
+
 # Create a new tube
 parameters = {:tube => {}}
 response = post("tubes", parameters)
@@ -186,6 +190,10 @@ post("actions/transfer_tubes_to_tubes", parameters)
 
 # Change the status of the dna tube to done
 parameters = {:items => {ROLE_EXTRACTED_TUBE => {dna_tube_uuid => {:event => :complete}}}}
+put(order_uuid, parameters)
+
+# Change the status of the elution_spin_column_dna to unused
+parameters = {:items => {ROLE_ELUTION_SPIN_COLUMN_DNA => {dna_spin_uuid => {:event => :unuse}}}}
 put(order_uuid, parameters)
 
 
@@ -217,6 +225,10 @@ post("actions/transfer_tubes_to_tubes", parameters)
 parameters = {:items => {ROLE_BY_PRODUCT_TUBE => {rnap_tube_uuid => {:event => :complete}}}}
 put(order_uuid, parameters)
 
+# Change the status of the tube_to_be_extracted to unused
+parameters = {:items => {ROLE_TUBE_TO_BE_EXTRACTED => {source_tube_uuid => {:event => :unuse}}}}
+put(order_uuid, parameters)
+
 
 # =====================================
 # Transfer from by product tube to tube 
@@ -241,8 +253,12 @@ parameters = {:transfer_tubes_to_tubes => {:transfers => [{
 }]}}
 post("actions/transfer_tubes_to_tubes", parameters)
 
-# Change the status of the by product tube to done
+# Change the status of the tube_to_be_extracted to done
 parameters = {:items => {ROLE_TUBE_TO_BE_EXTRACTED => {rnap_tube2_uuid => {:event => :complete}}}}
+put(order_uuid, parameters)
+
+# Change the status of the by_product_tube to unused
+parameters = {:items => {ROLE_BY_PRODUCT_TUBE => {rnap_tube_uuid => {:event => :unuse}}}}
 put(order_uuid, parameters)
 
 
@@ -274,6 +290,10 @@ post("actions/transfer_tubes_to_tubes", parameters)
 parameters = {:items => {ROLE_BINDING_SPIN_COLUMN_RNA => {rna_spin_uuid => {:event => :complete}}}}
 put(order_uuid, parameters)
 
+# Change the status of the tube_to_be_extracted to unused
+parameters = {:items => {ROLE_TUBE_TO_BE_EXTRACTED => {rnap_tube2_uuid => {:event => :unuse}}}}
+put(order_uuid, parameters)
+
 
 # ==============================================
 # Use the spin column in a new role elution
@@ -287,6 +307,10 @@ put(order_uuid, parameters)
 
 # Change the status of the spin column to done
 parameters = {:items => {ROLE_ELUTION_SPIN_COLUMN_RNA => {rna_spin_uuid => {:event => :complete}}}}
+put(order_uuid, parameters)
+
+# Change the status of the binding_spin_column_rna to unused
+parameters = {:items => {ROLE_BINDING_SPIN_COLUMN_RNA => {rna_spin_uuid => {:event => :unuse}}}}
 put(order_uuid, parameters)
 
 # Create a new tube
@@ -309,6 +333,10 @@ post("actions/transfer_tubes_to_tubes", parameters)
 
 # Change the status of the rna tube to done
 parameters = {:items => {ROLE_EXTRACTED_TUBE => {rna_tube_uuid => {:event => :complete}}}}
+put(order_uuid, parameters)
+
+# Change the status of the elution_spin_column_rna to unused
+parameters = {:items => {ROLE_ELUTION_SPIN_COLUMN_RNA => {rna_spin_uuid => {:event => :unuse}}}}
 put(order_uuid, parameters)
 
 
