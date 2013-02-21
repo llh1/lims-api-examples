@@ -59,7 +59,7 @@ end
 
 def dump_request(method, url, parameters, response)
   if @options[:verbose]
-    puts "#{method.upcase} /#{url}"
+    puts "#{method.upcase} /#{url.sub(/^\//, '')}"
     puts "< #{parameters.to_json}" if parameters
     puts "> #{response}" if response
     puts
