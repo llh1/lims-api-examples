@@ -193,6 +193,10 @@ module Lims::Api::Examples
 
       parameters = {:event => :complete}
       API::put(order_uuid, parameters)
+
+      # Results
+      @results[:eppendorf_a_tube_uuid] = eppendorf_a_tube_uuid
+      @results[:eppendorf_b_tube_uuid] = eppendorf_b_tube_uuid
     end
   end
 end
