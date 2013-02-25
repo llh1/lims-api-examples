@@ -8,11 +8,13 @@ module Lims::Api::Examples
     ALIQUOT_TYPE_NA = "NA"
     ALIQUOT_TYPE_NAP = "NA+P"
 
-    # DNA+RNA manual extraction
     module DnaRnaManualExtraction
       ORDER_PIPELINE = "DNA+RNA manual extraction"
-      SOURCE_TUBE_BARCODE = "XX123456K"
+      
+      SOURCE_TUBE_BARCODES = ["XX111111K", "XX222222K", "XX333333K"]
+      
       SOURCE_TUBE_ALIQUOT_TYPE = ALIQUOT_TYPE_NAP
+
       ROLE_TUBE_TO_BE_EXTRACTED = "tube_to_be_extracted"
       ROLE_BY_PRODUCT_TUBE = "by_product_tube"
       ROLE_BINDING_SPIN_COLUMN_DNA = "binding_spin_column_dna"
