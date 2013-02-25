@@ -13,26 +13,38 @@ require 'process/dna_rna_automated_extraction'
 module Lims::Api::Examples
   include API
   include DnaRnaManualExtraction
-  include ReTubing
+  include Constant
+  include Constant::DnaRnaManualExtraction
 
   @options = {}
   OptionParser.new do |opts|
     opts.banner = "Usage: dna_rna_manual_extraction.rb [options]"
     opts.on("-u", "--url [URL]") { |v| @options[:url] = v}
     opts.on("-v", "--verbose") { |v| @options[:verbose] = v}
+    opts.on("-m", "--mode [MODE]") { |v| @options[:mode] = v}
+    opts.on("-o", "--output [OUTPUT]") { |v| @options[:output] = v}
   end.parse!
 
   API::set_root(@options[:url] || "http://localhost:9292")
   API::set_verbose(@options[:verbose])
+  API::set_output(@options[:output]) if @options[:output]
 
-  # DNA + RNA Manual Extraction
-  DnaRnaManualExtraction::start
+  case @options[:mode]
+  when "manual" then
+    # DNA + RNA Manual Extraction
+    DnaRnaManualExtraction::set_barcodes([SOURCE_TUBE_BARCODES[0], SOURCE_TUBE_BARCODES[1]])
+    DnaRnaManualExtraction::start
 
-  # Re Tubing
-  ReTubing::start
-  re_tubing_results = ReTubing::results
+    API::generate_json
 
-  # Automated tube-to-tube DNA+RNA extraction (QIACube)
-  DnaRnaAutomatedExtraction::set_parameters(re_tubing_results)
-  DnaRnaAutomatedExtraction::start
+    #DnaRnaManualExtraction::set_barcodes([SOURCE_TUBE_BARCODES[2]])
+    #DnaRnaManualExtraction::start
+
+  when "automated" then
+    # Re Tubing
+    #ReTubing::start
+
+    # Automated tube-to-tube DNA+RNA extraction (QIACube)
+    #DnaRnaAutomatedExtraction::start
+  end
 end

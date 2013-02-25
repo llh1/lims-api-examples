@@ -59,8 +59,6 @@ module Lims::Api::Examples
       tube = Lims::Core::Laboratory::Tube.new
       tube << Lims::Core::Laboratory::Aliquot.new(:type => DnaRnaManualExtraction::SOURCE_TUBE_ALIQUOT_TYPE,
                                                   :quantity => INITIAL_QUANTITY)
-      tube << Lims::Core::Laboratory::Aliquot.new(:type => Lims::Core::Laboratory::Aliquot::Solvent,
-                                                  :quantity => INITIAL_QUANTITY)
       session << tube
       tube_uuid = session.uuid_for!(tube)
 
