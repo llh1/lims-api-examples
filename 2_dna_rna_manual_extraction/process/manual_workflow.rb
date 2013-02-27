@@ -1,5 +1,7 @@
 require 'process/dna_rna_manual_extraction'
 require 'process/post_extraction_tube_racking'
+require 'rubygems'
+require 'ruby-debug/debugger'
 
 module Lims::Api::Examples
   class ManualWorkflow
@@ -74,6 +76,21 @@ module Lims::Api::Examples
         end
       end
       }
+    end
+
+    # @param [Hash] transfers
+    # @example
+    # [{:source => source_uuids, :target => target_uuids, :fraction => 0.5, :aliquot_type => type}] 
+    def parameters_for_transfer(transfers)
+      {:transfer_tubes_to_tubes => {:transfers => [].tap do |a|
+        transfers.each do |transfer|
+          transfer[:source].zip(transfer[:target]).each do |source_uuid, target_uuid|
+            transfer_mode = transfer[:fraction] ? :fraction : :amount
+            a << {:source_uuid => source_uuid, :target_uuid => target_uuid, transfer_mode => transfer[transfer_mode], :aliquot_type => transfer[:aliquot_type]}
+          end
+        end
+      end
+      }}
     end
   end
 end

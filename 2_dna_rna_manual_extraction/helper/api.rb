@@ -49,6 +49,14 @@ module Lims::Api::Examples
         @stage_description = description
       end
 
+      def new_step(description = "")
+        @step_description = description
+      end
+
+      def reset_step
+        @step_description = ""
+      end
+
       def reset_stage
         @stage = 0
       end
@@ -73,7 +81,8 @@ module Lims::Api::Examples
 
       def add_output(method, url, parameters, response)
         @output[@stage] = {:description => "Stage #{@stage}: #{@stage_description}", :steps => []} unless @output.has_key?(@stage)
-        @output[@stage][:steps] << {:method => method, :url => "/#{url}", :parameters => parameters, :response => response}
+        @output[@stage][:steps] << {:description => @step_description, :method => method, :url => "/#{url.sub(/^\//, "")}", :parameters => parameters, :response => response}
+        reset_step
       end
 
       def add_print_screen(method, url, parameters, response)
