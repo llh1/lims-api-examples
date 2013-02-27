@@ -5,12 +5,7 @@ module Lims::Api::Examples
     include Constant
 
     def self.start
-      @results = {}
       workflow
-    end
-
-    def self.results
-      @results
     end
 
     private
@@ -39,9 +34,6 @@ module Lims::Api::Examples
         :fraction => 1
       }]}}
       API::post("actions/transfer_tubes_to_tubes", parameters)
-
-      # Results
-      @results[:re_tubing_tube_uuid] = tube2_uuid 
     end
   end
 end

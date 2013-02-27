@@ -57,17 +57,23 @@ module Lims::Api::Examples
         File.open(@path, 'w') { |f| f.write(@output.to_json) } if @path
       end
 
+      def barcode
+        @barcode_counter += 1
+        "XX123#{@barcode_counter}K"
+      end
+
       private 
 
       def init
         @api = RestClient::Resource.new(@api_root)
         @stage = 0
         @output = {}
+        @barcode_counter = 0
       end
 
       def add_output(method, url, parameters, response)
         @output[@stage] = {:description => "Stage #{@stage}: #{@stage_description}", :steps => []} unless @output.has_key?(@stage)
-        @output[@stage][:steps] << {:method => method, :url => url, :parameters => parameters, :response => response}
+        @output[@stage][:steps] << {:method => method, :url => "/#{url}", :parameters => parameters, :response => response}
       end
 
       def add_print_screen(method, url, parameters, response)

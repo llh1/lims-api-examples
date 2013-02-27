@@ -2,9 +2,7 @@ require 'lims-api-examples'
 require 'optparse'
 require 'helper/api'
 
-require 'process/dna_rna_manual_extraction'
-require 'process/re_tubing'
-require 'process/dna_rna_automated_extraction'
+require 'process/manual_workflow'
 
 # Note:
 # The script can be called with the following parameters
@@ -12,9 +10,7 @@ require 'process/dna_rna_automated_extraction'
 # -v print the json for each request
 module Lims::Api::Examples
   include API
-  include DnaRnaManualExtraction
   include Constant
-  include Constant::DnaRnaManualExtraction
 
   @options = {}
   OptionParser.new do |opts|
@@ -30,15 +26,18 @@ module Lims::Api::Examples
   API::set_output(@options[:output]) if @options[:output]
 
   case @options[:mode]
-  when "manual" then
-    # DNA + RNA Manual Extraction
-    DnaRnaManualExtraction::set_barcodes([SOURCE_TUBE_BARCODES[0], SOURCE_TUBE_BARCODES[1]])
-    DnaRnaManualExtraction::start
+  # DNA + RNA Manual Extraction
+  when "manual-2", "manual-1", "manual" then
+    include Constant::DnaRnaManualExtraction
 
+    barcodes = case @options[:mode]
+               when "manual-2" then [SOURCE_TUBE_BARCODES[0], SOURCE_TUBE_BARCODES[1]]
+               else [SOURCE_TUBE_BARCODES[2]]
+               end
+
+    manual = ManualWorkflow.new(barcodes)
+    manual.start
     API::generate_json
-
-    #DnaRnaManualExtraction::set_barcodes([SOURCE_TUBE_BARCODES[2]])
-    #DnaRnaManualExtraction::start
 
   when "automated" then
     # Re Tubing

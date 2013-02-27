@@ -26,7 +26,7 @@ module Lims::Api::Examples
 
   # Clean the database
   %w{items orders batches searches labels labellables tube_aliquots spin_column_aliquots  
-    aliquots tubes spin_columns studies users uuid_resources}.each do |table|
+    aliquots tube_rack_slots tube_racks tubes spin_columns studies users uuid_resources}.each do |table|
     DB[table.to_sym].delete
   end
 

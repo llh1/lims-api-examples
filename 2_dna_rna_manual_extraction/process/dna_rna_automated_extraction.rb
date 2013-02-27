@@ -6,16 +6,7 @@ module Lims::Api::Examples
     include Constant::DnaRnaAutomatedExtraction
 
     def self.start
-      @results = {}
       workflow
-    end
-
-    def self.set_parameters(parameters)
-      @parameters = parameters
-    end
-
-    def self.results
-      @results
     end
 
     private
@@ -91,6 +82,13 @@ module Lims::Api::Examples
       response = API::post("tubes", parameters)
       eppendorf_a_tube_uuid = response["tube"]["uuid"]
 
+      # Barcode the tube eppendorf a
+      parameters = {:labellable => {:name => eppendorf_a_tube_uuid,
+                                    :type => "resource",
+                                    :labels => {"barcode" => {:type => "sanger-barcode",
+                                                              :value => EPPENDORF_A_DNA_BARCODE}}}}
+      API::post("labellables", parameters)
+
       # Add the new tubes in the order and start them
       parameters = {:items => {
         ROLE_ALIQUOT_A => {aliquot_a_tube_uuid => {:event => :start, :batch_uuid => batch_uuid}},
@@ -156,7 +154,14 @@ module Lims::Api::Examples
       response = API::post("tubes", parameters)
       eppendorf_b_tube_uuid = response["tube"]["uuid"]
 
-      # Create the tube eppendorf b
+      # Barcode the tube eppendorf b
+      parameters = {:labellable => {:name => eppendorf_b_tube_uuid,
+                                    :type => "resource",
+                                    :labels => {"barcode" => {:type => "sanger-barcode",
+                                                              :value => EPPENDORF_B_RNA_BARCODE}}}}
+      API::post("labellables", parameters)
+
+      # Create the tube eppendorf c
       parameters = {:tube => {}}
       response = API::post("tubes", parameters)
       aliquot_c_tube_uuid = response["tube"]["uuid"]
@@ -193,10 +198,6 @@ module Lims::Api::Examples
 
       parameters = {:event => :complete}
       API::put(order_uuid, parameters)
-
-      # Results
-      @results[:eppendorf_a_tube_uuid] = eppendorf_a_tube_uuid
-      @results[:eppendorf_b_tube_uuid] = eppendorf_b_tube_uuid
     end
   end
 end
