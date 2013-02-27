@@ -6,8 +6,6 @@ require 'process/manual_workflow'
 
 # Note:
 # The script can be called with the following parameters
-# -u "root url to s2 api server"
-# -v print the json for each request
 module Lims::Api::Examples
   include API
   include Constant
@@ -25,18 +23,21 @@ module Lims::Api::Examples
   API::set_verbose(@options[:verbose])
   API::set_output(@options[:output]) if @options[:output]
 
+  barcode_1 = [SOURCE_TUBE_BARCODES[2]]
+  barcodes_2 = [SOURCE_TUBE_BARCODES[0], SOURCE_TUBE_BARCODES[1]]
+  barcodes = case @options[:mode]
+             when "manual-2" then barcodes_2 
+             else barcode_1
+             end
+
   case @options[:mode]
-  # DNA + RNA Manual Extraction
   when "manual-2", "manual-1", "manual" then
+    # DNA + RNA Manual Extraction
     include Constant::DnaRnaManualExtraction
-
-    barcodes = case @options[:mode]
-               when "manual-2" then [SOURCE_TUBE_BARCODES[0], SOURCE_TUBE_BARCODES[1]]
-               else [SOURCE_TUBE_BARCODES[2]]
-               end
-
     manual = ManualWorkflow.new(barcodes)
+    API::start_recording
     manual.start
+    API::stop_recording
     API::generate_json
 
   when "automated" then
