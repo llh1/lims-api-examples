@@ -10,7 +10,6 @@ module Lims::Api::Examples
 
     def initialize(barcodes = [])
       @barcodes = barcodes
-      @init_tubes_number = barcodes.size
       @parameters = {}
     end
 
@@ -21,8 +20,8 @@ module Lims::Api::Examples
 
     private
 
-    def factory(resource_type)
-      Array.new(@init_tubes_number).map do |_| 
+    def factory(resource_type, number)
+      Array.new(number).map do |_| 
         parameters = {resource_type.to_sym => {}}
         response = API::post("#{resource_type.to_s}s", parameters)
         resource_uuid = response[resource_type.to_s]["uuid"]

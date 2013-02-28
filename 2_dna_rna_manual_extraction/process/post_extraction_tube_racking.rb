@@ -19,6 +19,7 @@ module Lims::Api::Examples
         order_uuid = p[:order_uuid]
         batch_uuid = p[:batch_uuid]
         extracted_tube_uuids = p[:extracted_tube_uuids]
+        n_entries = extracted_tube_uuids[type.to_sym].size
 
         API::new_order(order_nb)
 
@@ -27,7 +28,7 @@ module Lims::Api::Examples
         # =================================== 
 
         API::new_step("Create new tubes")
-        tube_2d_uuids = factory(:tube)
+        tube_2d_uuids = factory(:tube, n_entries)
 
         API::new_step("Add the 2d tubes in the order and start them")
         parameters = parameters_for_adding_resources_in_order(ROLE_NAME => tube_2d_uuids)

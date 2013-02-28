@@ -84,6 +84,7 @@ module Lims::Api::Examples
       order_nb = 0
       order_uuids.zip(@parameters[:source_tube_uuids]).each do |order_uuid, source_tube_uuids|
         order_nb += 1
+        n_entries = source_tube_uuids.size
 
         API::new_order(order_nb)
 
@@ -105,10 +106,10 @@ module Lims::Api::Examples
         # ============================================
 
         API::new_step("Create new spin columns")
-        binding_spin_column_dna_uuids = factory(:spin_column)
+        binding_spin_column_dna_uuids = factory(:spin_column, n_entries)
 
         API::new_step("Create new tubes ")
-        by_product_tube_uuids = factory(:tube) 
+        by_product_tube_uuids = factory(:tube, n_entries) 
 
         API::new_step("Add the new spin columns and new tubes in the order and start each of them")
         parameters = parameters_for_adding_resources_in_order({
@@ -149,7 +150,7 @@ module Lims::Api::Examples
         API::put(order_uuid, parameters)
 
         API::new_step("Create new tubes ")
-        extracted_tube_dna_uuids = factory(:tube)
+        extracted_tube_dna_uuids = factory(:tube, n_entries)
 
         API::new_step("Add the extracted_dna_tube in the order and start them")
         parameters = parameters_for_adding_resources_in_order(ROLE_EXTRACTED_TUBE => extracted_tube_dna_uuids)
@@ -172,7 +173,7 @@ module Lims::Api::Examples
         # =====================================
 
         API::new_step("Create new tubes ")
-        tube_to_be_extracted_uuids = factory(:tube)
+        tube_to_be_extracted_uuids = factory(:tube, n_entries)
 
         API::new_step("Add tube_to_be_extracted tubes in the order and start them.")
         parameters = parameters_for_adding_resources_in_order(ROLE_TUBE_TO_BE_EXTRACTED => tube_to_be_extracted_uuids)
@@ -195,10 +196,10 @@ module Lims::Api::Examples
         # =============================================
 
         API::new_step("Create new spin columns")
-        binding_spin_column_rna_uuids = factory(:spin_column)
+        binding_spin_column_rna_uuids = factory(:spin_column, n_entries)
 
         API::new_step("Create new tubes ")
-        by_product_tube_uuids = factory(:tube)
+        by_product_tube_uuids = factory(:tube, n_entries)
 
         API::new_step("Add the new spin columns and new tubes in the order and start each of them")
         parameters = parameters_for_adding_resources_in_order({ROLE_BINDING_SPIN_COLUMN_RNA => binding_spin_column_rna_uuids,
@@ -238,7 +239,7 @@ module Lims::Api::Examples
         API::put(order_uuid, parameters)
 
         API::new_step("Create new tubes ")
-        extracted_tube_rna_uuids = factory(:tube)
+        extracted_tube_rna_uuids = factory(:tube, n_entries)
 
         API::new_step("Add the extracted_rna_tube in the order and start them")
         parameters = parameters_for_adding_resources_in_order(ROLE_EXTRACTED_TUBE => extracted_tube_rna_uuids)
