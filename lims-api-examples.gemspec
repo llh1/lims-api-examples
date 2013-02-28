@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
   # s.add_development_dependency "rspec"
   s.add_dependency('rest-client')
   s.add_dependency('sequel')
+  s.add_dependency('facets')
 
   #development
   s.add_development_dependency('rspec', '~> 2.8.0')

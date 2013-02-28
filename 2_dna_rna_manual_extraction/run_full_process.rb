@@ -23,18 +23,12 @@ module Lims::Api::Examples
   API::set_verbose(@options[:verbose])
   API::set_output(@options[:output]) if @options[:output]
 
-  barcode_1 = [SOURCE_TUBE_BARCODES[2]]
-  barcodes_2 = [SOURCE_TUBE_BARCODES[0], SOURCE_TUBE_BARCODES[1]]
-  barcodes = case @options[:mode]
-             when "manual-2" then barcodes_2 
-             else barcode_1
-             end
-
   case @options[:mode]
   when "manual-2", "manual-1", "manual" then
     # DNA + RNA Manual Extraction
     include Constant::DnaRnaManualExtraction
-    manual = ManualWorkflow.new(barcodes)
+    manual = ManualWorkflow.new([[SOURCE_TUBE_BARCODES[0], SOURCE_TUBE_BARCODES[1]],
+                                 [SOURCE_TUBE_BARCODES[2]]])
     API::start_recording
     manual.start
     API::stop_recording

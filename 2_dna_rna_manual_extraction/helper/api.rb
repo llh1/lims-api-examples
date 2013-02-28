@@ -1,5 +1,6 @@
 require 'json'
 require 'rest_client'
+require 'facets'
 
 module Lims::Api::Examples
   module API
@@ -31,6 +32,7 @@ module Lims::Api::Examples
         @stage = 0
         @output = {}
         @barcode_counter = 0
+        @order = "common"
       end
       private :init
 
@@ -71,6 +73,10 @@ module Lims::Api::Examples
           @recording = false
         end
 
+        def new_order(description = "")
+          @order = description
+        end
+
         def new_stage(description = "")
           @stage += 1
           @display_stage = true
@@ -81,8 +87,21 @@ module Lims::Api::Examples
           @step_description = description
         end
 
+        # As the output variable contains first all the json
+        # for the first order and then all the json for the
+        # second order, we mix the stage below to have
+        # Json order 1 stage 1, Json order 2 stage 1 etc...
         def generate_json
-          File.open(@path, 'w') { |f| f.write(@output.to_json) } if @path
+          common = @output.delete("common")
+          formated = [].tap do |arr|
+            @output.each do |k,v|
+              arr << v
+            end
+          end.map { |a| a.to_a }.transpose.flatten
+          formated = Hash[*formated]
+          i = 0
+          output = common.merge(formated).rekey! { |k| i += 1; i}
+          File.open(@path, 'w') { |f| f.write(output.to_json) } if @path
         end
 
         def dump_request(method, url, parameters, response)
@@ -95,9 +114,10 @@ module Lims::Api::Examples
 
         private 
 
-        def add_output(method, url, parameters, response)
-          @output[@stage] = {:description => "Stage #{@stage}: #{@stage_description}", :steps => []} unless @output.has_key?(@stage)
-          @output[@stage][:steps] << {:description => @step_description, :method => method, :url => "/#{url.sub(/^\//, "")}", :parameters => parameters, :response => response}
+        def add_output(method, url, request, response)
+          @output[@order] ||= {} unless @output.has_key?(@order)
+          @output[@order][@stage] = {:stage => "#{@stage_description}", :steps => []} unless @output[@order].has_key?(@stage)
+          @output[@order][@stage][:steps] << {:description => @step_description, :method => method, :url => "/#{url.sub(/^\//, "")}", :request => request, :response => response}
           reset_step
         end
 

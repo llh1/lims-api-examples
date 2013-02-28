@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     lims-api-examples (0.1)
+      facets
       rest-client
       sequel
 

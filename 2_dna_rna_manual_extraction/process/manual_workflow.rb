@@ -16,7 +16,7 @@ module Lims::Api::Examples
 
     def start
       dna_rna_manual_extraction_workflow
-      post_extraction_tube_racking_workflow
+#      post_extraction_tube_racking_workflow
     end
 
     private
