@@ -16,7 +16,7 @@ module Lims::Api::Examples
 
     def start
       dna_rna_manual_extraction_workflow
-#      post_extraction_tube_racking_workflow
+      post_extraction_tube_racking_workflow
     end
 
     private
@@ -29,11 +29,6 @@ module Lims::Api::Examples
         barcode(resource_uuid)
         resource_uuid
       end
-    end
-
-    def method_missing(name, *args, &block)
-      return @parameters[name.to_sym] if @parameters.include?(name.to_sym)
-      super(name, *args, &block)
     end
 
     def barcode(resource_uuid)

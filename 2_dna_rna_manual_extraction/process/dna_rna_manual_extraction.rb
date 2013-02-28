@@ -264,9 +264,10 @@ module Lims::Api::Examples
         API::put(order_uuid, parameters)
 
 
-        # Pass parameters neededto continue to workflow in
+        # Pass parameters needed to continue the workflow in
         # post extraction tube racking
-        @parameters = {:order_uuid => order_uuid, 
+        @parameters[:post_extraction] ||= {}
+        @parameters[:post_extraction][order_nb] = {:order_uuid => order_uuid, 
                        :batch_uuid => batch_uuid,
                        :extracted_tube_uuids => {:RNA => extracted_tube_rna_uuids,
                                                  :DNA => extracted_tube_dna_uuids}}
