@@ -22,6 +22,8 @@ module Lims::Api::Examples
       ROLE_BINDING_SPIN_COLUMN_RNA = "binding_spin_column_rna"
       ROLE_ELUTION_SPIN_COLUMN_RNA = "elution_spin_column_rna"
       ROLE_EXTRACTED_TUBE = "extracted_tube"
+      ROLE_EXTRACTED_TUBE_DNA = ROLE_EXTRACTED_TUBE 
+      ROLE_EXTRACTED_TUBE_RNA = ROLE_EXTRACTED_TUBE
       ROLE_NAME = "name"
       ROLE_STOCK_RNA = "Stock RNA"
       ROLE_STOCK_DNA = "Stock DNA"
@@ -37,6 +39,11 @@ module Lims::Api::Examples
       ROLE_ALIQUOT_B = "aliquot_b"
       ROLE_EPPENDORF_B = "eppendorf_b"
       ROLE_ALIQUOT_C = "aliquot_c"
+      ROLE_NAME = "name"
+      ROLE_EXTRACTED_TUBE_DNA = ROLE_EPPENDORF_A
+      ROLE_EXTRACTED_TUBE_RNA = ROLE_EPPENDORF_B
+      ROLE_STOCK_RNA = "Stock RNA"
+      ROLE_STOCK_DNA = "Stock DNA"
     end
   end
 end

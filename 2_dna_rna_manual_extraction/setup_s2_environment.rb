@@ -4,7 +4,7 @@ require 'lims-core'
 require 'lims-core/persistence/sequel'
 require 'sequel'
 require 'optparse'
-require 'helper/constant'
+require 'helpers/constant'
 
 # This script setup a clean working environment for S2 
 # Note:

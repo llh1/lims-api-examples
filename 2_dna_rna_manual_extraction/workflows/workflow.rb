@@ -1,26 +1,16 @@
-require 'process/dna_rna_manual_extraction'
-require 'process/post_extraction_tube_racking'
-require 'rubygems'
-require 'ruby-debug/debugger'
-
 module Lims::Api::Examples
-  class ManualWorkflow
-    include DnaRnaManualExtraction
-    include PostExtractionTubeRacking
+  class Workflow
+
+    include Constant
 
     def initialize(barcodes = [])
-      @barcodes = barcodes
+      @barcodes = barcodes.is_a?(Array) ? barcodes : [barcodes]
       @parameters = {}
     end
 
-    def start
-      dna_rna_manual_extraction_workflow
-      post_extraction_tube_racking_workflow
-    end
+    protected
 
-    private
-
-    def factory(resource_type, number)
+    def factory(resource_type, number = 1)
       Array.new(number).map do |_| 
         parameters = {resource_type.to_sym => {}}
         response = API::post("#{resource_type.to_s}s", parameters)
@@ -88,3 +78,4 @@ module Lims::Api::Examples
     end
   end
 end
+

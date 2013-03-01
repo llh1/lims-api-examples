@@ -1,6 +1,5 @@
-require 'helper/constant'
-require 'rubygems'
-require 'ruby-debug/debugger'
+require 'helpers/constant'
+require 'workflows/units/shared_units'
 
 # This script goes through the different steps 
 # of the DNA+RNA manual extraction pipeline.
@@ -10,86 +9,26 @@ module Lims::Api::Examples
 
     include Constant
     include Constant::DnaRnaManualExtraction
+    include SharedUnits
 
     private
 
     def dna_rna_manual_extraction_workflow
-      # =======================================
-      API::new_stage("Search the tubes by barcode and then search their corresponding order. Assign a batch to the tubes in the orders.")
-      # =======================================
+      assign_batch
 
-      @barcodes.each do |barcodes_array|
-        API::new_step("Find the tubes by barcodes for #{barcodes_array.to_s}")
-        parameters = {:search => {:description => "search for barcoded tube",
-                                  :model => "tube",
-                                  :criteria => {:label => {:position => "barcode",
-                                                           :type => "sanger-barcode",
-                                                           :value => barcodes_array}}}}
-        search_response = API::post("searches", parameters)
-
-        API::new_step("Get the search results (tubes)")
-        result_url = search_response["search"]["actions"]["first"]
-        result_response = API::get(result_url) 
-        source_tube_uuids = result_response["tubes"].reduce([]) { |m,e| m << e["tube"]["uuid"] }
-        @parameters[:source_tube_uuids] ||= []
-        @parameters[:source_tube_uuids] << source_tube_uuids
-
-        API::new_step("Find the order by tube uuid and role")
-        parameters = {:search => {:description => "search for order",
-                                  :model => "order",
-                                  :criteria => {:item => {:uuid => source_tube_uuids.first,
-                                                          :role => ROLE_TUBE_TO_BE_EXTRACTED}}}}
-        search_response = API::post("searches", parameters)
-
-        API::new_step("Get the search results (order)")
-        result_url = search_response["search"]["actions"]["first"]
-        result_response = API::get(result_url)
-        order = result_response["orders"].first["order"]
-        order_uuid = order["uuid"]
-
-        # Check that no batch has been assigned to the tubes
-        no_batch = order["items"][ROLE_TUBE_TO_BE_EXTRACTED].reduce(true) { |m,e| m = m && e["batch"].nil? }
-        abort("Error: A batch is already assigned to the source tube") unless no_batch
-
-        unless @batch_uuid
-          API::new_step("Create a new batch")
-          parameters = {:batch => {}}
-          response = API::post("batches", parameters)
-          @batch_uuid = response["batch"]["uuid"]
-        end
-
-        API::new_step("Assign the batch uuid to the tubes in the order items")
-        parameters = {:items => {ROLE_TUBE_TO_BE_EXTRACTED => {}.tap do |h|
-          source_tube_uuids.each { |uuid| h.merge!({uuid => {:batch_uuid => batch_uuid}}) }
-        end }}
-        API::put(order_uuid, parameters)
-      end
-
-
-      # =========================================== 
-      API::new_stage("Search the orders by batch")
-      # ===========================================
-      API::new_step("Create the search order by batch")
-      parameters = {:search => {:description => "search order by batch",
-                                :model => "order",
-                                :criteria => {:item => {:batch => @batch_uuid}}}}
-      search_response = API::post("searches", parameters)
-
-      API::new_step("Get the result orders")
-      result_url = search_response["search"]["actions"]["first"]
-      result_response = API::get(result_url)
-      order_uuids = result_response["orders"].reduce([]) { |m,e| m << e["order"]["uuid"] }
-
+      results = search_orders_by_batch
+      order_uuids = results[:order_uuids]
+      source_tube_uuids_array = results[:source_tube_uuids_array]
 
       order_nb = 0
-      order_uuids.zip(@parameters[:source_tube_uuids]).each do |order_uuid, source_tube_uuids|
+      order_uuids.zip(source_tube_uuids_array).each do |order_uuid, source_tube_uuids|
         order_nb += 1
         n_entries = source_tube_uuids.size
 
         API::new_order(order_nb)
 
         # =========================
-        API::new_stage("[Order #{order_nb}] Build and start the order")
+        API::new_stage("Build and start the order")
         # =========================
 
         API::new_step("Change the status of the order to pending")
@@ -102,7 +41,7 @@ module Lims::Api::Examples
 
 
         # ============================================
-        API::new_stage("[Order #{order_nb}] Create binding_spin_columns_dna spin columns. Create by_product_tube tubes. Transfers from tube_to_be_extracted into binding_spin_column_dna and by_product_tube tubes.") 
+        API::new_stage("Create binding_spin_columns_dna spin columns. Create by_product_tube tubes. Transfers from tube_to_be_extracted into binding_spin_column_dna and by_product_tube tubes.") 
         # ============================================
 
         API::new_step("Create new spin columns")
@@ -134,7 +73,7 @@ module Lims::Api::Examples
 
 
         # ==============================================
-        API::new_stage("[Order #{order_nb}] Use the binding_spin_column_dna spins in a new role elution_spin_column_dna. Then transfer the content of the spin columns to new extracted_tube tubes.")
+        API::new_stage("Use the binding_spin_column_dna spins in a new role elution_spin_column_dna. Then transfer the content of the spin columns to new extracted_tube tubes.")
         # ==============================================
 
         API::new_step("Add the binding_spin_column_dna under the role elution_spin_column_dna and start them.")
@@ -169,7 +108,7 @@ module Lims::Api::Examples
 
 
         # =====================================
-        API::new_stage("[Order #{order_nb}] Create new tube_to_be_extracted tube. Transfer from by_product_tube into tube_to_be_extracted.")
+        API::new_stage("Create new tube_to_be_extracted tube. Transfer from by_product_tube into tube_to_be_extracted.")
         # =====================================
 
         API::new_step("Create new tubes ")
@@ -192,7 +131,7 @@ module Lims::Api::Examples
 
 
         # =============================================
-        API::new_stage("[Order #{order_nb}] Create binding_spin_column_rna spins. Create by_product_tube tubes. Transfer tube_to_be_extracted into binding_spin_column_rna and into by_product_tube.")
+        API::new_stage("Create binding_spin_column_rna spins. Create by_product_tube tubes. Transfer tube_to_be_extracted into binding_spin_column_rna and into by_product_tube.")
         # =============================================
 
         API::new_step("Create new spin columns")
@@ -223,7 +162,7 @@ module Lims::Api::Examples
 
 
         # ==============================================
-        API::new_stage("[Order #{order_nb}] Use the binding_spin_column_rna spins in a new role elution_spin_column_rna. Then transfer the content of the spin columns to new extracted_tube tubes.")
+        API::new_stage("Use the binding_spin_column_rna spins in a new role elution_spin_column_rna. Then transfer the content of the spin columns to new extracted_tube tubes.")
         # ==============================================
 
         API::new_step("Add the binding_spin_column_rna under the role elution_spin_column_rna and start them.")
@@ -254,14 +193,6 @@ module Lims::Api::Examples
           ROLE_EXTRACTED_TUBE => {:uuids => extracted_tube_rna_uuids, :event => :complete},
           ROLE_ELUTION_SPIN_COLUMN_RNA => {:uuids => elution_spin_column_rna_uuids, :event => :unuse}
         })
-        API::put(order_uuid, parameters)
-
-
-        # ============================================
-        API::new_stage("[Order #{order_nb}] Change the status of the order to completed.")
-        # ============================================
-
-        parameters = {:event => :complete}
         API::put(order_uuid, parameters)
 
 

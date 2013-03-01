@@ -1,8 +1,9 @@
 require 'lims-api-examples'
 require 'optparse'
-require 'helper/api'
+require 'helpers/api'
 
-require 'process/manual_workflow'
+require 'workflows/manual_workflow'
+require 'workflows/automated_workflow'
 
 # Note:
 # The script can be called with the following parameters
@@ -24,7 +25,7 @@ module Lims::Api::Examples
   API::set_output(@options[:output]) if @options[:output]
 
   case @options[:mode]
-  when "manual-2", "manual-1", "manual" then
+  when "manual" then
     # DNA + RNA Manual Extraction
     include Constant::DnaRnaManualExtraction
     manual = ManualWorkflow.new([[SOURCE_TUBE_BARCODES[0], SOURCE_TUBE_BARCODES[1]],
@@ -35,10 +36,12 @@ module Lims::Api::Examples
     API::generate_json
 
   when "automated" then
-    # Re Tubing
-    #ReTubing::start
-
     # Automated tube-to-tube DNA+RNA extraction (QIACube)
-    #DnaRnaAutomatedExtraction::start
+    include Constant::DnaRnaAutomatedExtraction
+    automated = AutomatedWorkflow.new(SOURCE_TUBE_BARCODE) 
+    API::start_recording
+    automated.start
+    API::stop_recording
+    API::generate_json
   end
 end
