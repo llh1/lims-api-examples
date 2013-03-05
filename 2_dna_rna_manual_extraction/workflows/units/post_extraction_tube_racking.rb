@@ -3,6 +3,8 @@ require 'helpers/constant'
 module Lims::Api::Examples
   module PostExtractionTubeRacking
 
+    include Constant
+
     private
 
     def set_post_extraction_constants(constant)
@@ -29,7 +31,7 @@ module Lims::Api::Examples
         # =================================== 
 
         API::new_step("Create new tubes")
-        tube_2d_uuids = factory(:tube, n_entries)
+        tube_2d_uuids = factory(:tube, n_entries, BARCODE_2D)
 
         API::new_step("Add the 2d tubes in the order and start them")
         parameters = parameters_for_adding_resources_in_order(@constant::ROLE_NAME => tube_2d_uuids)

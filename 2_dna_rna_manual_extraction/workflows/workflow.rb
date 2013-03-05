@@ -10,21 +10,21 @@ module Lims::Api::Examples
 
     protected
 
-    def factory(resource_type, number = 1)
+    def factory(resource_type, number = 1, barcode_type = BARCODE_EAN13)
       Array.new(number).map do |_| 
         parameters = {resource_type.to_sym => {}}
         response = API::post("#{resource_type.to_s}s", parameters)
         resource_uuid = response[resource_type.to_s]["uuid"]
-        barcode(resource_uuid)
+        barcode(resource_uuid, barcode_type)
         resource_uuid
       end
     end
 
-    def barcode(resource_uuid)
+    def barcode(resource_uuid, barcode_type)
       parameters = {:labellable => {:name => resource_uuid,
                                     :type => "resource",
                                     :labels => {"barcode" => {:value => API::barcode,
-                                                              :type => "sanger-barcode"}}}}
+                                                              :type => barcode_type}}}}
       API::post("labellables", parameters)
     end
 

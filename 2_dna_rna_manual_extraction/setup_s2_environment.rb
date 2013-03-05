@@ -63,7 +63,7 @@ module Lims::Api::Examples
       tube_uuid = session.uuid_for!(tube)
 
       labellable = Lims::Core::Laboratory::Labellable.new(:name => tube_uuid, :type => "resource")
-      labellable["barcode"] = Lims::Core::Laboratory::Labellable::Label.new(:type => "sanger-barcode", 
+      labellable["barcode"] = Lims::Core::Laboratory::Labellable::Label.new(:type => BARCODE_EAN13, 
                                                                             :value => DnaRnaManualExtraction::SOURCE_TUBE_BARCODES[i])
       session << labellable
       session.uuid_for!(labellable)
@@ -81,7 +81,7 @@ module Lims::Api::Examples
                                                   :study => session.study[order_config[:study_id]],
                                                   :pipeline => DnaRnaManualExtraction::ORDER_PIPELINE,
                                                   :cost_code => "cost code")
-      order.add_source(DnaRnaManualExtraction::ROLE_TUBE_TO_BE_EXTRACTED, source_tubes)
+      order.add_source(ROLE_TUBE_TO_BE_EXTRACTED, source_tubes)
       session << order
       session.uuid_for!(order)
     end
@@ -98,7 +98,7 @@ module Lims::Api::Examples
     tube_uuid = session.uuid_for!(tube)
 
     labellable = Lims::Core::Laboratory::Labellable.new(:name => tube_uuid, :type => "resource")
-    labellable["barcode"] = Lims::Core::Laboratory::Labellable::Label.new(:type => "sanger-barcode", 
+    labellable["barcode"] = Lims::Core::Laboratory::Labellable::Label.new(:type => BARCODE_EAN13, 
                                                                           :value => DnaRnaAutomatedExtraction::SOURCE_TUBE_BARCODE)
     session << labellable
     session.uuid_for!(labellable)
@@ -112,7 +112,7 @@ module Lims::Api::Examples
                                                 :study => session.study[order_config[:study_id]],
                                                 :pipeline => DnaRnaAutomatedExtraction::ORDER_PIPELINE,
                                                 :cost_code => "cost code")
-    order.add_source(DnaRnaAutomatedExtraction::ROLE_TUBE_TO_BE_EXTRACTED, [tube_automated_uuid])
+    order.add_source(ROLE_TUBE_TO_BE_EXTRACTED, [tube_automated_uuid])
     session << order
     session.uuid_for!(order)
   end

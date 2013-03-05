@@ -4,7 +4,6 @@ module Lims::Api::Examples
   module SharedUnits
 
     include Constant
-    include Constant::DnaRnaManualExtraction
  
     def assign_batch
       # =======================================
@@ -16,7 +15,7 @@ module Lims::Api::Examples
         parameters = {:search => {:description => "search for barcoded tube",
                                   :model => "tube",
                                   :criteria => {:label => {:position => "barcode",
-                                                           :type => "sanger-barcode",
+                                                           :type => BARCODE_EAN13,
                                                            :value => barcodes_array}}}}
         search_response = API::post("searches", parameters)
 

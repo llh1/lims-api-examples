@@ -8,6 +8,11 @@ module Lims::Api::Examples
     ALIQUOT_TYPE_NA = "NA"
     ALIQUOT_TYPE_NAP = "NA+P"
 
+    BARCODE_EAN13 = "ean13-barcode"
+    BARCODE_2D = "2d-barcode"
+
+    ROLE_TUBE_TO_BE_EXTRACTED = "tube_to_be_extracted"
+
     module DnaRnaManualExtraction
       ORDER_PIPELINE = "DNA+RNA manual extraction"
       
@@ -15,7 +20,6 @@ module Lims::Api::Examples
       
       SOURCE_TUBE_ALIQUOT_TYPE = ALIQUOT_TYPE_NAP
 
-      ROLE_TUBE_TO_BE_EXTRACTED = "tube_to_be_extracted"
       ROLE_BY_PRODUCT_TUBE = "by_product_tube"
       ROLE_BINDING_SPIN_COLUMN_DNA = "binding_spin_column_dna"
       ROLE_ELUTION_SPIN_COLUMN_DNA = "elution_spin_column_dna"
@@ -33,7 +37,6 @@ module Lims::Api::Examples
       ORDER_PIPELINE = "DNA+RNA automated extraction"
       SOURCE_TUBE_BARCODE = "XX987654K"
       SOURCE_TUBE_ALIQUOT_TYPE = ALIQUOT_TYPE_NA
-      ROLE_TUBE_TO_BE_EXTRACTED = "tube_to_be_extracted"
       ROLE_ALIQUOT_A = "aliquot_a"
       ROLE_EPPENDORF_A = "eppendorf_a"
       ROLE_ALIQUOT_B = "aliquot_b"
