@@ -57,7 +57,9 @@ module Lims::Api::Examples
   tube_manual_uuids.map! do |i|
     STORE.with_session do |session|
       tube = Lims::Core::Laboratory::Tube.new
-      tube << Lims::Core::Laboratory::Aliquot.new(:type => DnaRnaManualExtraction::SOURCE_TUBE_ALIQUOT_TYPE,
+      sample = Lims::Core::Laboratory::Sample.new(:name => "sample_#{i}") 
+      tube << Lims::Core::Laboratory::Aliquot.new(:sample => sample,
+                                                  :type => DnaRnaManualExtraction::SOURCE_TUBE_ALIQUOT_TYPE,
                                                   :quantity => INITIAL_QUANTITY)
       session << tube
       tube_uuid = session.uuid_for!(tube)
