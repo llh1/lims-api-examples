@@ -1,7 +1,10 @@
+require 'workflows/units/root' 
+
 module Lims::Api::Examples
   class Workflow
 
     include Constant
+    include Root
 
     def initialize(barcodes = [])
       @barcodes = barcodes.is_a?(Array) ? barcodes : [barcodes]
@@ -9,6 +12,10 @@ module Lims::Api::Examples
     end
 
     protected
+
+    def start
+      root
+    end
 
     def factory(resource_type, number = 1, barcode_type = BARCODE_EAN13)
       Array.new(number).map do |_| 

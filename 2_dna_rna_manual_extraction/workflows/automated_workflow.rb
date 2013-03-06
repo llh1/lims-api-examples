@@ -11,6 +11,7 @@ module Lims::Api::Examples
     include PostExtractionTubeRacking
 
     def start
+      super
       re_tubing_workflow
       dna_rna_automated_workflow
       set_post_extraction_constants(Constant::DnaRnaAutomatedExtraction)
