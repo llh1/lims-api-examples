@@ -38,7 +38,9 @@ module Lims::Api::Examples
 
       def barcode
         @barcode_counter += 1
-        "XX123#{@barcode_counter}K"
+        "123456789#{@barcode_counter}".tap do |b|
+          b << "0" * (13 - b.size)
+        end
       end
 
 

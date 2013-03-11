@@ -16,7 +16,7 @@ module Lims::Api::Examples
     module DnaRnaManualExtraction
       ORDER_PIPELINE = "DNA+RNA manual extraction"
       
-      SOURCE_TUBE_BARCODES = ["XX111111K", "XX222222K", "XX333333K"]
+      SOURCE_TUBE_BARCODES = ["1220017279667", "1220017279668", "1220017279669"]
       
       SOURCE_TUBE_ALIQUOT_TYPE = ALIQUOT_TYPE_NAP
 
@@ -35,7 +35,7 @@ module Lims::Api::Examples
 
     module DnaRnaAutomatedExtraction
       ORDER_PIPELINE = "DNA+RNA automated extraction"
-      SOURCE_TUBE_BARCODE = "XX987654K"
+      SOURCE_TUBE_BARCODE = "1220017279666"
       SOURCE_TUBE_ALIQUOT_TYPE = ALIQUOT_TYPE_NA
       ROLE_ALIQUOT_A = "aliquot_a"
       ROLE_EPPENDORF_A = "eppendorf_a"

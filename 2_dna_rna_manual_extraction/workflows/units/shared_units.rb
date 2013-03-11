@@ -4,25 +4,29 @@ module Lims::Api::Examples
   module SharedUnits
 
     include Constant
- 
+
     def assign_batch
       # =======================================
       API::new_stage("Search the tubes by barcode and then search their corresponding order. Assign a batch to the tubes in the orders.")
       # =======================================
 
       @barcodes.each do |barcodes_array|
-        API::new_step("Find the tubes by barcodes for #{barcodes_array.to_s}")
-        parameters = {:search => {:description => "search for barcoded tube",
-                                  :model => "tube",
-                                  :criteria => {:label => {:position => "barcode",
-                                                           :type => BARCODE_EAN13,
-                                                           :value => barcodes_array}}}}
-        search_response = API::post("searches", parameters)
 
-        API::new_step("Get the search results (tubes)")
-        result_url = search_response["search"]["actions"]["first"]
-        result_response = API::get(result_url) 
-        source_tube_uuids = result_response["tubes"].reduce([]) { |m,e| m << e["tube"]["uuid"] }
+        source_tube_uuids = []
+        barcodes_array.each do |barcode|
+          API::new_step("Find tube by barcode for #{barcode}")
+          parameters = {:search => {:description => "search for barcoded tube",
+                                    :model => "tube",
+                                    :criteria => {:label => {:position => "barcode",
+                                                             :type => BARCODE_EAN13,
+                                                             :value => barcode}}}}
+          search_response = API::post("searches", parameters)
+
+          API::new_step("Get the search result (tube)")
+          result_url = search_response["search"]["actions"]["first"]
+          result_response = API::get(result_url) 
+          source_tube_uuids << result_response["tubes"].first["tube"]["uuid"]
+        end
 
         API::new_step("Find the order by tube uuid and role")
         parameters = {:search => {:description => "search for order",
