@@ -25,7 +25,7 @@ module Lims::Api::Examples
           API::new_step("Get the search result (tube)")
           result_url = search_response["search"]["actions"]["first"]
           result_response = API::get(result_url) 
-          source_tube_uuids << result_response["tubes"].first["tube"]["uuid"]
+          source_tube_uuids << result_response["tubes"].first["uuid"]
         end
 
         API::new_step("Find the order by tube uuid and role")
@@ -38,7 +38,7 @@ module Lims::Api::Examples
         API::new_step("Get the search results (order)")
         result_url = search_response["search"]["actions"]["first"]
         result_response = API::get(result_url)
-        order = result_response["orders"].first["order"]
+        order = result_response["orders"].first
         order_uuid = order["uuid"]
 
         # Check that no batch has been assigned to the tubes
@@ -74,10 +74,10 @@ module Lims::Api::Examples
       API::new_step("Get the result orders")
       result_url = search_response["search"]["actions"]["first"]
       result_response = API::get(result_url)
-      order_uuids = result_response["orders"].reduce([]) { |m,e| m << e["order"]["uuid"] }
+      order_uuids = result_response["orders"].reduce([]) { |m,e| m << e["uuid"] }
       source_tube_uuids_array = [].tap do |arr|
         result_response["orders"].each do |o|
-          o["order"]["items"].each do |k,items|
+          o["items"].each do |k,items|
             arr << items.reduce([]) { |m,e| m << e["uuid"] }
           end
         end
