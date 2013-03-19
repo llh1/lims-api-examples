@@ -1,11 +1,15 @@
 require 'json'
 require 'rest_client'
 require 'facets'
+require 'helpers/constant'
+require 'rubygems'
+require 'ruby-debug/debugger'
 
 module Lims::Api::Examples
   module API
 
     HEADERS = {'Content-Type' => 'application/json', 'Accept' => 'application/json'}
+    include Constant
 
     def self.included(klass)
       extend ClassMethods
@@ -46,13 +50,17 @@ module Lims::Api::Examples
 
       module Request
         def post(url, parameters)
-          response = JSON.parse(@api[url].post(parameters.to_json, HEADERS))
+          parameters[parameters.keys.first][:user] = Constant::USER
+          json_parameters = parameters.to_json
+          response = JSON.parse(@api[url].post(json_parameters, HEADERS))
           dump_request("post", url, parameters, response)
           response
         end
 
         def put(url, parameters)
-          response = JSON.parse(@api[url].put(parameters.to_json, HEADERS))
+          parameters[:user] = Constant::USER
+          json_parameters = parameters.to_json
+          response = JSON.parse(@api[url].put(json_parameters, HEADERS))
           dump_request("put", url, parameters, response)
           response
         end

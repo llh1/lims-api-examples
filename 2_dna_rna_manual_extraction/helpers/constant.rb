@@ -11,6 +11,8 @@ module Lims::Api::Examples
     BARCODE_EAN13 = "ean13-barcode"
     BARCODE_2D = "2d-barcode"
 
+    USER = "username"
+
     ROLE_TUBE_TO_BE_EXTRACTED = "tube_to_be_extracted"
 
     module DnaRnaManualExtraction
