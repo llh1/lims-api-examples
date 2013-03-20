@@ -1,5 +1,4 @@
 require 'helpers/constant'
-require 'helpers/helper'
 require 'workflows/units/shared_units'
 
 # This script goes through the different steps 
@@ -54,7 +53,7 @@ module Lims::Api::Examples
         API::new_step("Add the new spin columns and new tubes in the order and start each of them")
         parameters = parameters_for_adding_resources_in_order({
           ROLE_BINDING_SPIN_COLUMN_DNA => binding_spin_column_dna_uuids,
-          ROLE_BY_PRODUCT_TUBE => by_product_tube_uuids})
+          ROLE_BY_PRODUCT_TUBE_RNAP => by_product_tube_uuids})
         API::put(order_uuid, parameters)
 
         API::new_step("Transfers from tube_to_be_extracted into binding_spin_column_dna spins and into by_product_tube tubes.")
@@ -67,43 +66,43 @@ module Lims::Api::Examples
         API::new_step("Change the status of the binding_spin_column_dna to done. Change the status of the by_product_tube to done. Change the status of the tube_to_be_extracted to unused")
         parameters = parameters_for_changing_items_status({
           ROLE_BINDING_SPIN_COLUMN_DNA => {:uuids => binding_spin_column_dna_uuids, :event => :complete},
-          ROLE_BY_PRODUCT_TUBE => {:uuids => by_product_tube_uuids, :event => :complete},
+          ROLE_BY_PRODUCT_TUBE_RNAP => {:uuids => by_product_tube_uuids, :event => :complete},
           ROLE_BINDING_TUBE_TO_BE_EXTRACTED_NAP => {:uuids => source_tube_uuids, :event => :unuse}
         })
         API::put(order_uuid, parameters)
 
 
         # ==============================================
-        API::new_stage("Use the binding_spin_column_dna spins in a new role elution_spin_column_dna. Then transfer the content of the spin columns to new extracted_tube tubes.")
+        API::new_stage("Transfer the content of the spin columns to new extracted_tube tubes.")
         # ==============================================
 
-        API::new_step("Add the binding_spin_column_dna under the role elution_spin_column_dna and start them.")
-        elution_spin_column_dna_uuids = binding_spin_column_dna_uuids # alias
-        parameters = parameters_for_adding_resources_in_order(ROLE_ELUTION_SPIN_COLUMN_DNA => elution_spin_column_dna_uuids)
-        API::put(order_uuid, parameters)
+        #API::new_step("Add the binding_spin_column_dna under the role elution_spin_column_dna and start them.")
+        #elution_spin_column_dna_uuids = binding_spin_column_dna_uuids # alias
+        #parameters = parameters_for_adding_resources_in_order(ROLE_ELUTION_SPIN_COLUMN_DNA => elution_spin_column_dna_uuids)
+        #API::put(order_uuid, parameters)
 
-        API::new_step("Change the status of elution_spin_column_dna to done. Change the status of binding_spin_column_dna to unused ")
-        parameters = parameters_for_changing_items_status({
-          ROLE_ELUTION_SPIN_COLUMN_DNA => {:uuids => elution_spin_column_dna_uuids, :event => :complete},
-          ROLE_BINDING_SPIN_COLUMN_DNA => {:uuids => binding_spin_column_dna_uuids, :event => :unuse}
-        })
-        API::put(order_uuid, parameters)
+        #API::new_step("Change the status of elution_spin_column_dna to done. Change the status of binding_spin_column_dna to unused ")
+        #parameters = parameters_for_changing_items_status({
+        #  ROLE_ELUTION_SPIN_COLUMN_DNA => {:uuids => elution_spin_column_dna_uuids, :event => :complete},
+        #  ROLE_BINDING_SPIN_COLUMN_DNA => {:uuids => binding_spin_column_dna_uuids, :event => :unuse}
+        #})
+        #API::put(order_uuid, parameters)
 
         API::new_step("Create new tubes ")
         extracted_tube_dna_uuids = factory(:tube, n_entries)
 
         API::new_step("Add the extracted_dna_tube in the order and start them")
-        parameters = parameters_for_adding_resources_in_order(ROLE_EXTRACTED_TUBE => extracted_tube_dna_uuids)
+        parameters = parameters_for_adding_resources_in_order(ROLE_EXTRACTED_TUBE_DNA => extracted_tube_dna_uuids)
         API::put(order_uuid, parameters)
 
-        API::new_step("Transfer elution_spin_column_dna into extracted_tube")
-        parameters = parameters_for_transfer([{:source => elution_spin_column_dna_uuids, :target => extracted_tube_dna_uuids, :fraction => 1}])
+        API::new_step("Transfer binding_spin_column_dna into extracted_tube")
+        parameters = parameters_for_transfer([{:source => binding_spin_column_dna_uuids, :target => extracted_tube_dna_uuids, :fraction => 1}])
         API::post("actions/transfer_tubes_to_tubes", parameters)
 
-        API::new_step("Change the status of extracted_tube tubes to done. Change the status of elution_spin_column_dna to unused")
+        API::new_step("Change the status of extracted_tube tubes to done. Change the status of binding_spin_column_dna to unused")
         parameters = parameters_for_changing_items_status({
-          ROLE_EXTRACTED_TUBE => {:uuids => extracted_tube_dna_uuids, :event => :complete},
-          ROLE_ELUTION_SPIN_COLUMN_DNA => {:uuids => elution_spin_column_dna_uuids, :event => :unuse}
+          ROLE_EXTRACTED_TUBE_DNA => {:uuids => extracted_tube_dna_uuids, :event => :complete},
+          ROLE_BINDING_SPIN_COLUMN_DNA => {:uuids => binding_spin_column_dna_uuids, :event => :unuse}
         })
         API::put(order_uuid, parameters)
 
@@ -116,7 +115,7 @@ module Lims::Api::Examples
         tube_to_be_extracted_uuids = factory(:tube, n_entries)
 
         API::new_step("Add tube_to_be_extracted tubes in the order and start them.")
-        parameters = parameters_for_adding_resources_in_order(ROLE_TUBE_TO_BE_EXTRACTED => tube_to_be_extracted_uuids)
+        parameters = parameters_for_adding_resources_in_order(ROLE_TUBE_TO_BE_EXTRACTED_RNAP => tube_to_be_extracted_uuids)
         API::put(order_uuid, parameters)
 
         API::new_step("Transfer from by_product_tube tubes into tube_to_be_extracted tubes")
@@ -125,8 +124,8 @@ module Lims::Api::Examples
 
         API::new_step("Change the status of by_product_tube to done. Change the status of tube_to_be_extracted to done")
         parameters = parameters_for_changing_items_status({
-          ROLE_TUBE_TO_BE_EXTRACTED => {:uuids => tube_to_be_extracted_uuids, :event => :complete},
-          ROLE_BY_PRODUCT_TUBE => {:uuids => by_product_tube_uuids, :event => :unuse}
+          ROLE_TUBE_TO_BE_EXTRACTED_RNAP => {:uuids => tube_to_be_extracted_uuids, :event => :complete},
+          ROLE_BY_PRODUCT_TUBE_RNAP => {:uuids => by_product_tube_uuids, :event => :unuse}
         })
         API::put(order_uuid, parameters)
 
@@ -143,7 +142,7 @@ module Lims::Api::Examples
 
         API::new_step("Add the new spin columns and new tubes in the order and start each of them")
         parameters = parameters_for_adding_resources_in_order({ROLE_BINDING_SPIN_COLUMN_RNA => binding_spin_column_rna_uuids,
-                                                               ROLE_BY_PRODUCT_TUBE => by_product_tube_uuids})
+                                                               ROLE_BY_PRODUCT_TUBE_RNAP => by_product_tube_uuids})
         API::put(order_uuid, parameters)
 
         API::new_step("Transfers from tube_to_be_extracted into binding_spin_column_rna spins and into by_product_tube tubes.")
@@ -156,43 +155,43 @@ module Lims::Api::Examples
         API::new_step("Change the status of binding_spin_column_rna to done. Change the status of by_product_tube to done. Change the status of tube_to_be_extracted to unused")
         parameters = parameters_for_changing_items_status({
           ROLE_BINDING_SPIN_COLUMN_RNA => {:uuids => binding_spin_column_rna_uuids, :event => :complete},
-          ROLE_BY_PRODUCT_TUBE => {:uuids => by_product_tube_uuids, :event => :complete},
-          ROLE_TUBE_TO_BE_EXTRACTED => {:uuids => tube_to_be_extracted_uuids, :event => :unuse}
+          ROLE_BY_PRODUCT_TUBE_RNAP => {:uuids => by_product_tube_uuids, :event => :complete},
+          ROLE_TUBE_TO_BE_EXTRACTED_RNAP => {:uuids => tube_to_be_extracted_uuids, :event => :unuse}
         })
         API::put(order_uuid, parameters)
 
 
         # ==============================================
-        API::new_stage("Use the binding_spin_column_rna spins in a new role elution_spin_column_rna. Then transfer the content of the spin columns to new extracted_tube tubes.")
+        API::new_stage("Transfer the content of the spin columns to new extracted_tube tubes.")
         # ==============================================
 
-        API::new_step("Add the binding_spin_column_rna under the role elution_spin_column_rna and start them.")
-        elution_spin_column_rna_uuids = binding_spin_column_rna_uuids # alias
-        parameters = parameters_for_adding_resources_in_order(ROLE_ELUTION_SPIN_COLUMN_RNA => elution_spin_column_rna_uuids)
-        API::put(order_uuid, parameters)
+        #API::new_step("Add the binding_spin_column_rna under the role elution_spin_column_rna and start them.")
+        #elution_spin_column_rna_uuids = binding_spin_column_rna_uuids # alias
+        #parameters = parameters_for_adding_resources_in_order(ROLE_ELUTION_SPIN_COLUMN_RNA => elution_spin_column_rna_uuids)
+        #API::put(order_uuid, parameters)
 
-        API::new_step("Change the status of elution_spin_column_rna to done. Change the status of binding_spin_column_rna to unused ")
-        parameters = parameters_for_changing_items_status({
-          ROLE_ELUTION_SPIN_COLUMN_RNA => {:uuids => elution_spin_column_rna_uuids, :event => :complete},
-          ROLE_BINDING_SPIN_COLUMN_RNA => {:uuids => binding_spin_column_rna_uuids, :event => :unuse}
-        })
-        API::put(order_uuid, parameters)
+        #API::new_step("Change the status of elution_spin_column_rna to done. Change the status of binding_spin_column_rna to unused ")
+        #parameters = parameters_for_changing_items_status({
+        #  ROLE_ELUTION_SPIN_COLUMN_RNA => {:uuids => elution_spin_column_rna_uuids, :event => :complete},
+        #  ROLE_BINDING_SPIN_COLUMN_RNA => {:uuids => binding_spin_column_rna_uuids, :event => :unuse}
+        #})
+        #API::put(order_uuid, parameters)
 
         API::new_step("Create new tubes ")
         extracted_tube_rna_uuids = factory(:tube, n_entries)
 
         API::new_step("Add the extracted_rna_tube in the order and start them")
-        parameters = parameters_for_adding_resources_in_order(ROLE_EXTRACTED_TUBE => extracted_tube_rna_uuids)
+        parameters = parameters_for_adding_resources_in_order(ROLE_EXTRACTED_TUBE_RNA => extracted_tube_rna_uuids)
         API::put(order_uuid, parameters)
 
-        API::new_step("Transfer elution_spin_column_rna into extracted_tube")
-        parameters = parameters_for_transfer([{:source => elution_spin_column_rna_uuids, :target => extracted_tube_rna_uuids, :fraction => 1}])
+        API::new_step("Transfer binding_spin_column_rna into extracted_tube")
+        parameters = parameters_for_transfer([{:source => binding_spin_column_rna_uuids, :target => extracted_tube_rna_uuids, :fraction => 1}])
         API::post("actions/transfer_tubes_to_tubes", parameters)
 
-        API::new_step("Change the status of extracted_tube tubes to done. Change the status of elution_spin_column_rna to unused")
+        API::new_step("Change the status of extracted_tube tubes to done. Change the status of binding_spin_column_rna to unused")
         parameters = parameters_for_changing_items_status({
-          ROLE_EXTRACTED_TUBE => {:uuids => extracted_tube_rna_uuids, :event => :complete},
-          ROLE_ELUTION_SPIN_COLUMN_RNA => {:uuids => elution_spin_column_rna_uuids, :event => :unuse}
+          ROLE_EXTRACTED_TUBE_RNA => {:uuids => extracted_tube_rna_uuids, :event => :complete},
+          ROLE_BINDING_SPIN_COLUMN_RNA => {:uuids => binding_spin_column_rna_uuids, :event => :unuse}
         })
         API::put(order_uuid, parameters)
 
