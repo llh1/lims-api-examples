@@ -31,10 +31,19 @@ module Lims::Api::Examples
         @path = path
       end
 
+      def set_rspec_json_output(path)
+        @rspec_json_path = path
+      end
+
+      def set_rspec_title(title)
+        @rspec_title = title
+      end
+
       def init
         @api = RestClient::Resource.new(@api_root)
         @stage = 0
         @output = {}
+        @rspec_output = {}
         @barcode_counter = 0
         @order = "common"
       end
@@ -97,21 +106,41 @@ module Lims::Api::Examples
           @step_description = description
         end
 
+        def rspec_global_setup
+          nil          
+        end
+
+        def generate_rspec_json
+          if @rspec_json_path
+            output = formatted_output
+            rspec = {:examples => nil, :title => @rspec_title, :setup => rspec_global_setup} 
+            examples = []
+            output.each do |stage_nb, stage|
+              stage[:steps].each do |step|
+                examples << {:url => step[:url],
+                             :method => step[:method],
+                             :status => 200,
+                             :parameters => step[:request].to_json,
+                             :response => step[:response].to_json,
+                             :header => ["Accept: application/json"],
+                             :response_header => ["Content-Type: application/json"],
+                             :setup => nil,
+                             :title => step[:description],
+                             :description => step[:description]}
+              end
+            end
+            rspec[:examples] = examples
+            File.open(@rspec_json_path, 'w') { |f| f.write(rspec.to_json)}
+          end
+        end
+
         # As the output variable contains first all the json
         # for the first order and then all the json for the
         # second order, we mix the stage below to have
         # Json order 1 stage 1, Json order 2 stage 1 etc...
         def generate_json
           if @path
-            common = @output.delete("common")
-            formated = [].tap do |arr|
-              @output.each do |k,v|
-                arr << v
-              end
-            end.map { |a| a.to_a }.transpose.flatten
-            formated = Hash[*formated]
-            i = 0
-            output = common.merge(formated).rekey! { |k| i += 1; i}
+            output = formatted_output
             File.open(@path, 'w') { |f| f.write(output.to_json) }
           end
         end
@@ -119,12 +148,25 @@ module Lims::Api::Examples
         def dump_request(method, url, parameters, response)
           if @recording
             add_print_screen(method, url, parameters, response) if @verbose
-            add_output(method, url, parameters, response) if @path
+            add_output(method, url, parameters, response) if @path || @rspec_json_path
           end
           @display_stage = false
         end
 
         private 
+
+        def formatted_output
+          output = @output.clone
+          common = output.delete("common")
+          formated = [].tap do |arr|
+            output.each do |k,v|
+              arr << v
+            end
+          end.map { |a| a.to_a }.transpose.flatten
+          formated = Hash[*formated]
+          i = 0
+          common.merge(formated).rekey! { |k| i += 1; i}
+        end
 
         def add_output(method, url, request, response)
           @output[@order] ||= {} unless @output.has_key?(@order)

@@ -18,11 +18,13 @@ module Lims::Api::Examples
     opts.on("-v", "--verbose") { |v| @options[:verbose] = v}
     opts.on("-m", "--mode [MODE]") { |v| @options[:mode] = v}
     opts.on("-o", "--output [OUTPUT]") { |v| @options[:output] = v}
+    opts.on("-r", "--rspec [PATH]") { |v| @options[:rspec] = v}
   end.parse!
 
   API::set_root(@options[:url] || "http://localhost:9292")
   API::set_verbose(@options[:verbose])
   API::set_output(@options[:output]) if @options[:output]
+  API::set_rspec_json_output(@options[:rspec]) if @options[:rspec]
 
   case @options[:mode]
   when "manual" then
@@ -30,10 +32,11 @@ module Lims::Api::Examples
     include Constant::DnaRnaManualExtraction
     manual = ManualWorkflow.new([[SOURCE_TUBE_BARCODES[0], SOURCE_TUBE_BARCODES[1]],
                                  [SOURCE_TUBE_BARCODES[2]]])
+
+    API::set_rspec_title("DNA+RNA Manual Extraction")
     API::start_recording
     manual.start
     API::stop_recording
-    API::generate_json
 
   when "automated" then
     # Automated tube-to-tube DNA+RNA extraction (QIACube)
@@ -42,6 +45,8 @@ module Lims::Api::Examples
     API::start_recording
     automated.start
     API::stop_recording
-    API::generate_json
   end
+
+  API::generate_json
+  API::generate_rspec_json
 end

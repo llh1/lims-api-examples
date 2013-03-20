@@ -14,6 +14,7 @@ module Lims::Api::Examples
     USER = "username"
 
     ROLE_TUBE_TO_BE_EXTRACTED = "tube_to_be_extracted"
+    ROLE_TUBE_TO_BE_EXTRACTED_NAP = "tube_to_be_extracted_nap"
 
     module DnaRnaManualExtraction
       ORDER_PIPELINE = "DNA+RNA manual extraction"
@@ -21,15 +22,16 @@ module Lims::Api::Examples
       SOURCE_TUBE_BARCODES = ["1220017279667", "1220017279668", "1220017279669"]
       
       SOURCE_TUBE_ALIQUOT_TYPE = ALIQUOT_TYPE_NAP
-
-      ROLE_BY_PRODUCT_TUBE = "by_product_tube"
+      
+      ROLE_TUBE_TO_BE_EXTRACTED_RNAP = "tube_to_be_extracted_rnap"
+      ROLE_BINDING_TUBE_TO_BE_EXTRACTED_NAP = "binding_tube_to_be_extracted_nap"
+      ROLE_BY_PRODUCT_TUBE_RNAP = "by_product_tube_rnap"
       ROLE_BINDING_SPIN_COLUMN_DNA = "binding_spin_column_dna"
       ROLE_ELUTION_SPIN_COLUMN_DNA = "elution_spin_column_dna"
       ROLE_BINDING_SPIN_COLUMN_RNA = "binding_spin_column_rna"
       ROLE_ELUTION_SPIN_COLUMN_RNA = "elution_spin_column_rna"
-      ROLE_EXTRACTED_TUBE = "extracted_tube"
-      ROLE_EXTRACTED_TUBE_DNA = ROLE_EXTRACTED_TUBE 
-      ROLE_EXTRACTED_TUBE_RNA = ROLE_EXTRACTED_TUBE
+      ROLE_EXTRACTED_TUBE_DNA = "extracted_tube_dna" 
+      ROLE_EXTRACTED_TUBE_RNA = "extracted_tube_rna"
       ROLE_NAME = "name"
       ROLE_STOCK_RNA = "Stock RNA"
       ROLE_STOCK_DNA = "Stock DNA"
