@@ -1,4 +1,5 @@
 require 'helpers/constant'
+require 'helpers/helper'
 require 'workflows/units/shared_units'
 
 # This script goes through the different steps 
@@ -19,7 +20,7 @@ module Lims::Api::Examples
       results = search_orders_by_batch
       order_uuids = results[:order_uuids]
       source_tube_uuids_array = results[:source_tube_uuids_array]
-
+     
       order_nb = 0
       order_uuids.zip(source_tube_uuids_array).each do |order_uuid, source_tube_uuids|
         order_nb += 1
@@ -67,7 +68,7 @@ module Lims::Api::Examples
         parameters = parameters_for_changing_items_status({
           ROLE_BINDING_SPIN_COLUMN_DNA => {:uuids => binding_spin_column_dna_uuids, :event => :complete},
           ROLE_BY_PRODUCT_TUBE => {:uuids => by_product_tube_uuids, :event => :complete},
-          ROLE_TUBE_TO_BE_EXTRACTED => {:uuids => source_tube_uuids, :event => :unuse}
+          ROLE_BINDING_TUBE_TO_BE_EXTRACTED_NAP => {:uuids => source_tube_uuids, :event => :unuse}
         })
         API::put(order_uuid, parameters)
 

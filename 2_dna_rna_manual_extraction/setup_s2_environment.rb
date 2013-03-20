@@ -83,7 +83,7 @@ module Lims::Api::Examples
                                                   :study => session.study[order_config[:study_id]],
                                                   :pipeline => DnaRnaManualExtraction::ORDER_PIPELINE,
                                                   :cost_code => "cost code")
-      order.add_source(ROLE_TUBE_TO_BE_EXTRACTED, source_tubes)
+      order.add_source(ROLE_TUBE_TO_BE_EXTRACTED_NAP, source_tubes)
       session << order
       session.uuid_for!(order)
     end

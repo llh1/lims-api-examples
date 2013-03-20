@@ -14,6 +14,7 @@ module Lims::Api::Examples
     USER = "username"
 
     ROLE_TUBE_TO_BE_EXTRACTED = "tube_to_be_extracted"
+    ROLE_TUBE_TO_BE_EXTRACTED_NAP = "tube_to_be_extracted_nap"
 
     module DnaRnaManualExtraction
       ORDER_PIPELINE = "DNA+RNA manual extraction"
@@ -21,7 +22,8 @@ module Lims::Api::Examples
       SOURCE_TUBE_BARCODES = ["1220017279667", "1220017279668", "1220017279669"]
       
       SOURCE_TUBE_ALIQUOT_TYPE = ALIQUOT_TYPE_NAP
-
+      
+      ROLE_BINDING_TUBE_TO_BE_EXTRACTED_NAP = "binding_tube_to_be_extracted_nap"
       ROLE_BY_PRODUCT_TUBE = "by_product_tube"
       ROLE_BINDING_SPIN_COLUMN_DNA = "binding_spin_column_dna"
       ROLE_ELUTION_SPIN_COLUMN_DNA = "elution_spin_column_dna"
