@@ -33,7 +33,7 @@ module Lims::Api::Examples
     manual = ManualWorkflow.new([[SOURCE_TUBE_BARCODES[0], SOURCE_TUBE_BARCODES[1]],
                                  [SOURCE_TUBE_BARCODES[2]]])
 
-    API::set_rspec_title("DNA+RNA Manual Extraction")
+    API::set_rspec_setup_context("setup_s2_environment_for_dna_rna_manual_extraction")
     API::start_recording
     manual.start
     API::stop_recording
