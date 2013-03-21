@@ -2,8 +2,6 @@ require 'json'
 require 'rest_client'
 require 'facets'
 require 'helpers/constant'
-require 'rubygems'
-require 'ruby-debug/debugger'
 
 module Lims::Api::Examples
   module API
@@ -35,8 +33,8 @@ module Lims::Api::Examples
         @rspec_json_path = path
       end
 
-      def set_rspec_title(title)
-        @rspec_title = title
+      def set_rspec_setup_context(shared_context_name)
+        @rspec_shared_context_name = shared_context_name
       end
 
       def init
@@ -59,7 +57,7 @@ module Lims::Api::Examples
 
       module Request
         def post(url, parameters)
-          parameters[parameters.keys.first][:user] = Constant::USER
+          parameters[parameters.keys.first] = {:user => Constant::USER}.merge(parameters[parameters.keys.first])
           json_parameters = parameters.to_json
           response = JSON.parse(@api[url].post(json_parameters, HEADERS))
           dump_request("post", url, parameters, response)
@@ -106,31 +104,30 @@ module Lims::Api::Examples
           @step_description = description
         end
 
-        def rspec_global_setup
-          nil          
+        def rspec_dump_new_uuids(h)
+          [].tap do |uuids|
+            h.each do |k,v|
+              v[:steps].each do |step|
+                if step[:method].downcase == "post"
+                  step[:response].each do |rk, rv|
+                    uuids << rv["uuid"] if rv["uuid"]
+                  end
+                end
+              end
+            end
+          end
         end
 
         def generate_rspec_json
           if @rspec_json_path
+            setup = "include_context '#{@rspec_shared_context_name}'"
+            header = ["Accept: application/json"]
+            response_header = ["Content-Type: application/json"]
             output = formatted_output
-            rspec = {:examples => nil, :title => @rspec_title, :setup => rspec_global_setup} 
-            examples = []
-            output.each do |stage_nb, stage|
-              stage[:steps].each do |step|
-                examples << {:url => step[:url],
-                             :method => step[:method],
-                             :status => 200,
-                             :parameters => step[:request].to_json,
-                             :response => step[:response].to_json,
-                             :header => ["Accept: application/json"],
-                             :response_header => ["Content-Type: application/json"],
-                             :setup => nil,
-                             :title => step[:description],
-                             :description => step[:description]}
-              end
-            end
-            rspec[:examples] = examples
-            File.open(@rspec_json_path, 'w') { |f| f.write(rspec.to_json)}
+            uuids = rspec_dump_new_uuids(output)
+            uuids_setup = "set_uuids_sequence(#{uuids.inspect})"
+            rspec_output = {:global_setup => setup, :header => header, :response_header => response_header, :setup => uuids_setup}.merge(output)
+            File.open(@rspec_json_path, 'w') { |f| f.write(rspec_output.to_json)}
           end
         end
 
