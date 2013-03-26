@@ -9,7 +9,7 @@ PATH
 PATH
   remote: ../lims-core
   specs:
-    lims-core (1.4.0.0.2)
+    lims-core (1.4.1.0.4)
       active_support
       aequitas
       bunny (= 0.9.0.pre4)
@@ -46,6 +46,7 @@ GEM
     macaddr (1.6.1)
       systemu (~> 2.5.0)
     mime-types (1.21)
+    mysql (2.9.1)
     rack (1.5.1)
     rake (10.0.3)
     rest-client (1.6.7)
@@ -79,6 +80,7 @@ DEPENDENCIES
   debugger-completion
   lims-api-examples!
   lims-core!
+  mysql
   rake
   rspec (~> 2.8.0)
   shotgun
