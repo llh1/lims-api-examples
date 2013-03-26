@@ -26,20 +26,17 @@ module Lims::Api::Examples
   DB = Sequel.connect(CONNECTION_STRING)
   STORE = Lims::Core::Persistence::Sequel::Store.new(DB)
 
-  module API
-    if options[:api]
-      require 'rest_client'
-      def post(url, parameters)
-        response = RestClient.post(
-          "#{API_ROOT}/#{url}", 
-          parameters.to_json,
-          {'Content-Type' => 'application/json', 'Accept' => 'application/json'}
-        )
-        JSON.parse(response)
-      end
+  if options[:api]
+    require 'rest_client'
+    def self.post(url, parameters)
+      response = RestClient.post(
+        "#{API_ROOT}/#{url}", 
+        parameters.to_json,
+        {'Content-Type' => 'application/json', 'Accept' => 'application/json'}
+      )
+      JSON.parse(response)
     end
   end
-  extend API
 
   # Clean the database
   %w{items orders batches searches labels labellables tube_aliquots spin_column_aliquots  
