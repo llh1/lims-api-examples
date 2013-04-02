@@ -32,9 +32,10 @@ module Lims::Api::Examples
       ROLE_ELUTION_SPIN_COLUMN_RNA = "elution_spin_column_rna"
       ROLE_EXTRACTED_TUBE_DNA = "extracted_tube_dna" 
       ROLE_EXTRACTED_TUBE_RNA = "extracted_tube_rna"
-      ROLE_NAME = "name"
-      ROLE_STOCK_RNA = "Stock RNA"
-      ROLE_STOCK_DNA = "Stock DNA"
+      ROLE_NAME_DNA = "name_dna"
+      ROLE_NAME_RNA = "name_rna"
+      ROLE_STOCK_RNA = "stock_rna"
+      ROLE_STOCK_DNA = "stock_dna"
     end
 
     module DnaRnaAutomatedExtraction

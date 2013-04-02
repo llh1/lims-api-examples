@@ -34,7 +34,8 @@ module Lims::Api::Examples
         tube_2d_uuids = factory(:tube, n_entries, BARCODE_2D)
 
         API::new_step("Add the 2d tubes in the order and start them")
-        parameters = parameters_for_adding_resources_in_order(@constant::ROLE_NAME => tube_2d_uuids)
+        role_name = (type == "RNA") ? @constant::ROLE_NAME_RNA : @constant::ROLE_NAME_DNA
+        parameters = parameters_for_adding_resources_in_order(role_name => tube_2d_uuids)
         API::put(order_uuid, parameters)
 
         API::new_step("Transfer extracted tubes into 2D tubes")
@@ -45,7 +46,7 @@ module Lims::Api::Examples
         role_extracted_tube = (type == "RNA") ? @constant::ROLE_EXTRACTED_TUBE_RNA : @constant::ROLE_EXTRACTED_TUBE_DNA
         parameters = parameters_for_changing_items_status({
           role_extracted_tube => {:uuids => extracted_tube_uuids[type.to_sym], :event => :unuse},
-          @constant::ROLE_NAME => {:uuids => tube_2d_uuids, :event => :complete}
+          role_name => {:uuids => tube_2d_uuids, :event => :complete}
         })
         API::put(order_uuid, parameters)
 
