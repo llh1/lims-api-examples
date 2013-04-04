@@ -13,7 +13,6 @@ module Lims::Api::Examples
       # =======================================
 
       @barcodes.each do |barcodes_array|
-
         source_tube_uuids = []
         barcodes_array.each do |barcode|
           API::new_step("Find tube by barcode for #{barcode}")
@@ -71,6 +70,10 @@ module Lims::Api::Examples
         })
         API::put(order_uuid, parameters)
       end
+      
+      API::new_step("Add the kit barcode to the batch")
+      parameters = { :kit => KIT_BARCODE }
+      API::put(@batch_uuid, parameters)
     end
 
 
