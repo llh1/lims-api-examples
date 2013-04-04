@@ -125,7 +125,7 @@ module Lims::Api::Examples
             response_header = ["Content-Type: application/json"]
             output = formatted_output
             uuids = rspec_dump_new_uuids(output)
-            uuids_setup = "set_uuids_sequence(#{uuids.inspect})"
+            uuids_setup = "push_uuids(#{uuids.inspect})"
             rspec_output = {:global_setup => setup, :header => header, :response_header => response_header, :setup => uuids_setup}.merge(output)
             File.open(@rspec_json_path, 'w') { |f| f.write(rspec_output.to_json)}
           end
