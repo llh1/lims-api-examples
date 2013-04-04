@@ -18,6 +18,7 @@ module Lims::Api::Examples
 
     module DnaRnaManualExtraction
       ORDER_PIPELINE = "DNA+RNA manual extraction"
+      KIT_BARCODE = "1234567891011"
       
       SOURCE_TUBE_BARCODES = ["1220017279667", "1220017279668", "1220017279669"]
       
