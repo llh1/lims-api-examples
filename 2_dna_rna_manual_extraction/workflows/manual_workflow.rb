@@ -12,8 +12,8 @@ module Lims::Api::Examples
     def start
       super
       dna_rna_manual_extraction_workflow
-      set_post_extraction_constants(Constant::DnaRnaManualExtraction)
-      post_extraction_tube_racking_workflow
+      #set_post_extraction_constants(Constant::DnaRnaManualExtraction)
+      #post_extraction_tube_racking_workflow
     end
   end
 end

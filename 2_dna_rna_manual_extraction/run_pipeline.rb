@@ -30,8 +30,8 @@ module Lims::Api::Examples
   when "manual" then
     # DNA + RNA Manual Extraction
     include Constant::DnaRnaManualExtraction
-    manual = ManualWorkflow.new([[SOURCE_TUBE_BARCODES[0], SOURCE_TUBE_BARCODES[1]],
-                                 [SOURCE_TUBE_BARCODES[2]]])
+    manual = ManualWorkflow.new([[SOURCE_TUBE_BARCODES[0], SOURCE_TUBE_BARCODES[1]]])
+                                 #[SOURCE_TUBE_BARCODES[2]]])
 
     API::set_rspec_setup_context("setup_s2_environment_for_dna_rna_manual_extraction")
     API::start_recording
@@ -47,6 +47,7 @@ module Lims::Api::Examples
     API::stop_recording
   end
 
+  API::x_generate_json
   API::generate_json
   API::generate_rspec_json
 end

@@ -2,6 +2,8 @@ require 'json'
 require 'rest_client'
 require 'facets'
 require 'helpers/constant'
+require 'rubygems'
+require 'ruby-debug/debugger'
 
 module Lims::Api::Examples
   module API
@@ -67,6 +69,18 @@ module Lims::Api::Examples
         end
       end
 
+      
+      module MockBarcode
+        def barcode
+          method = "post"
+          url = "/actions/create_barcode"
+          parameters = {:create_barcode => {:labware => "tube", :role => "stock", :contents => "DNA"}}
+          response = {}
+
+          dump_request(method, url, parameters, response)
+        end
+      end
+
 
       module Request
         def post(url, parameters)
@@ -78,7 +92,7 @@ module Lims::Api::Examples
         end
 
         def put(url, parameters)
-          parameters[:user] = Constant::USER
+          parameters = {:user => Constant::USER}.merge(parameters)
           json_parameters = parameters.to_json
           response = JSON.parse(@api[url].put(json_parameters, HEADERS))
           dump_request("put", url, parameters, response)
@@ -157,13 +171,58 @@ module Lims::Api::Examples
 
         def dump_request(method, url, parameters, response)
           if @recording
+            x_new_output(method, url, parameters, response)
             add_print_screen(method, url, parameters, response) if @verbose
             add_output(method, url, parameters, response) if @path || @rspec_json_path
           end
           @display_stage = false
         end
 
+        def x_generate_json
+          File.open("example.json", 'w') { |f| f.write(@output.to_json) }
+        end
+
         private 
+
+        def x_new_output(method, url, parameters, response)
+          @counter ||= 0
+          @output[:default] ||= {:calls => []} 
+          if method == 'post' || method == 'put'
+            if @counter == 0 
+              call = x_new_call(method, url, parameters, response, 1)
+              @output[:default][:calls] << call 
+            else
+              call = x_new_call(method, url, parameters, response, @counter + 1)
+              @output[@counter] ||= {:calls => []} 
+              @output[@counter][:calls] << call
+            end
+            uuid = response.values.first["uuid"]
+            @counter += 1
+            get(uuid)
+          elsif method == 'get'
+            x_new_stage(url, response) 
+          end
+        end
+
+        def x_new_stage(url,response)
+          call = x_new_call('get', url, nil, response)
+          if @counter == 0
+            @output[:default][:calls] << call 
+          else
+            @output[@counter] ||= {:calls => []}          
+            @output[@counter][:calls] << call
+          end
+        end
+
+        def x_new_call(method, url, parameters, response, next_stage = nil)
+          call = {:description => @step_description, :method => method, :url => "/#{url.sub(/^\//, "")}"}
+          call[:request] = parameters if parameters
+          call[:response] = response
+          call[:next_stage] = next_stage if next_stage
+          call
+        end
+
+
 
         def formatted_output
           output = @output.clone
