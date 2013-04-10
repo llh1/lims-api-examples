@@ -22,15 +22,15 @@ module Lims::Api::Examples
         parameters = {resource_type.to_sym => {}}
         response = API::post("#{resource_type.to_s}s", parameters)
         resource_uuid = response[resource_type.to_s]["uuid"]
-        barcode(resource_uuid, barcode_type)
+        barcode(resource_type, resource_uuid, barcode_type)
         resource_uuid
       end
     end
 
-    def barcode(resource_uuid, barcode_type)
+    def barcode(resource_type, resource_uuid, barcode_type)
       parameters = {:labellable => {:name => resource_uuid,
                                     :type => "resource",
-                                    :labels => {"barcode" => {:value => API::barcode,
+                                    :labels => {"barcode" => {:value => API::mock_barcode_generation(resource_type),
                                                               :type => barcode_type}}}}
       API::post("labellables", parameters)
     end
