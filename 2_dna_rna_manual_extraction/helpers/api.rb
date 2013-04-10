@@ -13,6 +13,7 @@ module Lims::Api::Examples
       extend ClassMethods
       extend ClassMethods::Request
       extend ClassMethods::Output
+      extend ClassMethods::MockBarcode
     end
 
     module ClassMethods
@@ -47,10 +48,22 @@ module Lims::Api::Examples
       end
       private :init
 
-      def barcode
-        @barcode_counter += 1
-        "123456789#{@barcode_counter}".tap do |b|
-          b << "0" * (13 - b.size)
+      module MockBarcode
+        def barcode
+          @barcode_counter += 1
+          "123456789#{@barcode_counter}".tap do |b|
+            b << "0" * (13 - b.size)
+          end
+        end
+
+        def mock_barcode_generation(type)
+          method = "post"
+          url = "/actions/create_barcode"
+          ean13barcode = barcode
+          parameters = {:create_barcode => {:labware => type, :role => "stock", :contents => "DNA"}}
+          response = {:create_barcode => {:actions => {}, :user => "user", :application => "application", :result => {:barcode => { :actions => { :read => "http://example.org/11111111-2222-3333-4444-555555555555", :update => "http://example.org/11111111-2222-3333-4444-555555555555", :delete => "http://example.org/11111111-2222-3333-4444-555555555555", :create => "http://example.org/11111111-2222-3333-4444-555555555555"}, :uuid => "11111111-2222-3333-4444-555555555555", :ean13 => ean13barcode, :sanger => { :prefix => "ND", :number => "1233334", :suffix => "K"}}, :uuid => "11111111-2222-3333-4444-555555555555"}, :labware => type, :role => "stock", :contents => "DNA"}}
+          dump_request(method, url, parameters, response)
+          ean13barcode
         end
       end
 
