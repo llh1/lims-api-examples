@@ -30,10 +30,10 @@ module Lims::Api::Examples
     def barcode(resource_uuid, barcode_value)
       parameters = {:labellable => {:name => resource_uuid,
                                     :type => "resource",
-                                    :labels => {"barcode" => {:value => barcode_value,
-                                                              :type => "ean13-barcode"},
-                                                "sanger label" => {:value => "JD#{barcode_value}U",
-                                                                   :type => "sanger-barcode"}}}}
+                                    :labels => {"barcode" => {:type => "ean13-barcode",
+                                                              :value => barcode_value},
+                                                "sanger label" => {:type => "sanger-barcode",
+                                                                   :value => "JD#{barcode_value}U"}}}}
       API::post("labellables", parameters)
     end
 
