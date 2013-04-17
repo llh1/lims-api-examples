@@ -41,36 +41,13 @@ module Lims::Api::Examples
         barcode(e[:uuid], barcode_values.pop) 
       end
 
-#      @barcodes.first.each_with_index do |barcode,index|
-#        API::new_step("Find tube by barcode (#{barcode})")
-#        parameters = {:search => {:description => "search for barcoded tube",
-#                                  :model => "tube",
-#                                  :criteria => {:label => {:position => "barcode",
-#                                                           :type => BARCODE_EAN13,
-#                                                           :value => barcode}}}}
-#        search_response = API::post("searches", parameters)
-#
-#        API::new_step("Get the search result (tube)")
-#        result_url = search_response["search"]["actions"]["first"]
-#        result_response = API::get(result_url) 
-#        tube_uuid = result_response["tubes"].first["uuid"]
-#       # source_tube_uuids << tube_uuid 
-#
-#        if index == 0
-#          API::new_step("Find the order by tube uuid")
-#          parameters = {:search => {:description => "search for order",
-#                                    :model => "order",
-#                                    :criteria => {:item => {:uuid => tube_uuid}}}}
-#          search_response = API::post("searches", parameters)
-#
-#          API::new_step("Get the search results (order)")
-#          result_url = search_response["search"]["actions"]["first"]
-#          result_response = API::get(result_url)
-#          order = result_response["orders"].first
-#          order_uuid = order["uuid"]
-#        end
-#      end
-
+      API::new_step("Add the new spin columns and new tubes in the order and start each of them")
+      binding_spin_column_dna_uuids = uuids.select { |e| e[:type] == "spin_column" }.map { |e| e[:uuid] }
+      by_product_tube_uuids = uuids.select { |e| e[:type] == "tube" }.map { |e| e[:uuid] }
+      parameters = parameters_for_adding_resources_in_order({
+        ROLE_BINDING_SPIN_COLUMN_DNA => binding_spin_column_dna_uuids,
+        ROLE_BY_PRODUCT_TUBE_RNAP => by_product_tube_uuids})
+      API::put(order_uuid, parameters)
 
 
      # API::new_step("Create the search order by batch")
