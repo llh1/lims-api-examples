@@ -71,13 +71,15 @@ module Lims::Api::Examples
 
       
       module MockBarcode
-        def barcode
+
+        def mock_barcode_generation(labware, contents)
           method = "post"
-          url = "/actions/create_barcode"
-          parameters = {:create_barcode => {:labware => "tube", :role => "stock", :contents => "DNA"}}
-          response = {}
+          url = "/barcodes"
+          parameters = {:barcode => {:user => "username", :labware => labware, :role => "stock", :contents => contents}}
+          response = { "barcode"=> { "actions"=> { "read"=> "http://example.org/11111111-2222-3333-4444-555555555555", "update"=> "http://example.org/11111111-2222-3333-4444-555555555555",        "delete"=> "http://example.org/11111111-2222-3333-4444-555555555555",        "create"=> "http://example.org/11111111-2222-3333-4444-555555555555"    },    "uuid"=> "11111111-2222-3333-4444-555555555555",    "ean13"=> "12345",    "sanger"=> {      "prefix"=> "JD",      "number"=> "12345",      "suffix"=> "U"    }}} 
 
           dump_request(method, url, parameters, response)
+          "12345"
         end
       end
 
@@ -198,7 +200,12 @@ module Lims::Api::Examples
             end
             uuid = response.values.first["uuid"]
             @counter += 1
-            get(uuid)
+            begin
+              get(uuid)
+            rescue
+              response = {}
+              dump_request("get", uuid, nil, response)
+            end
           elsif method == 'get'
             x_new_stage(url, response) 
           end

@@ -11,7 +11,7 @@ module Lims::Api::Examples
       # =======================================
       API::new_stage("Search the tubes by barcode and then search their corresponding order. Assign a batch to the tubes in the orders. Once the batch has been assigned, the tube gets the role binding.")
       # =======================================
-
+      order_uuid = nil
       @barcodes.each do |barcodes_array|
         source_tube_uuids = []
         tube_uuid = nil # just save the second tube uuid
@@ -65,8 +65,8 @@ module Lims::Api::Examples
         order_uuid = order["uuid"]
 
         # Check that no batch has been assigned to the tubes
-        no_batch = order["items"][ROLE_TUBE_TO_BE_EXTRACTED_NAP].reduce(true) { |m,e| m = m && e["batch"].nil? }
-        abort("Error: A batch is already assigned to the source tube") unless no_batch
+     #   no_batch = order["items"][ROLE_TUBE_TO_BE_EXTRACTED_NAP].reduce(true) { |m,e| m = m && e["batch"].nil? }
+     #   abort("Error: A batch is already assigned to the source tube") unless no_batch
 
         API::new_step("Assign the batch uuid to the tubes in the order items")
         parameters = {:items => {ROLE_TUBE_TO_BE_EXTRACTED_NAP => {}.tap do |h|
@@ -88,11 +88,16 @@ module Lims::Api::Examples
         API::put(order_uuid, parameters)
       end
       
-      search_orders_by_batch
+      result = search_orders_by_batch
+      result[:source_tube_uuids_array].each do |tube_uuid|
+        API::get(tube_uuid)
+      end
 
       API::new_step("Add the kit barcode to the batch")
       parameters = { :kit => KIT_BARCODE }
       API::put(@batch_uuid, parameters)
+
+      {:order_uuid => order_uuid}
     end
 
 
@@ -109,14 +114,17 @@ module Lims::Api::Examples
       API::new_step("Get the result orders")
       result_url = search_response["search"]["actions"]["first"]
       result_response = API::get(result_url)
-     # order_uuids = result_response["orders"].reduce([]) { |m,e| m << e["uuid"] }
-     # source_tube_uuids_array = [].tap do |arr|
-     #   result_response["orders"].each do |o|
-     #     arr << o["items"][ROLE_BINDING_TUBE_TO_BE_EXTRACTED_NAP].map { |item| item["uuid"] }
-     #   end
-     # end
 
-     # {:order_uuids => order_uuids, :source_tube_uuids_array => source_tube_uuids_array}
+      order_uuids = result_response["orders"].reduce([]) { |m,e| m << e["uuid"] }
+      source_tube_uuids_array = [].tap do |arr|
+        result_response["orders"].each do |o|
+          if o.has_key?("items") && o["items"].has_key?(ROLE_BINDING_TUBE_TO_BE_EXTRACTED_NAP)
+            arr << o["items"][ROLE_BINDING_TUBE_TO_BE_EXTRACTED_NAP].map { |item| item["uuid"] }
+          end
+        end
+      end
+
+      {:order_uuids => order_uuids, :source_tube_uuids_array => source_tube_uuids_array.flatten}
     end
   end
 end

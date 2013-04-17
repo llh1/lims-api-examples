@@ -14,7 +14,87 @@ module Lims::Api::Examples
     private
 
     def dna_rna_manual_extraction_workflow
-      assign_batch
+      parameters = assign_batch
+      order_uuid = parameters[:order_uuid]
+
+      uuids = []
+      2.times do
+        API::new_step("Create new spin column")
+        parameters = {:spin_column => {}}
+        response = API::post("spin_columns", parameters)
+        uuids << {:type => "spin_column", :contents => "DNA", :uuid => response["spin_column"]["uuid"]}
+
+        API::new_step("Create new tube")
+        parameters = {:tube => {}}
+        response = API::post("tubes", parameters)
+        uuids << {:type => "tube", :contents => "RNA+P", :uuid => response["tube"]["uuid"]}
+      end
+
+      barcode_values = []
+      uuids.each do |e|
+        API::new_step("Generate a new barcode")
+        barcode_values << API::mock_barcode_generation(e[:type], e[:contents])          
+      end
+
+      uuids.each do |e|
+        API::new_step("Add a barcode to #{e[:uuid]}")
+        barcode(e[:uuid], barcode_values.pop) 
+      end
+
+#      @barcodes.first.each_with_index do |barcode,index|
+#        API::new_step("Find tube by barcode (#{barcode})")
+#        parameters = {:search => {:description => "search for barcoded tube",
+#                                  :model => "tube",
+#                                  :criteria => {:label => {:position => "barcode",
+#                                                           :type => BARCODE_EAN13,
+#                                                           :value => barcode}}}}
+#        search_response = API::post("searches", parameters)
+#
+#        API::new_step("Get the search result (tube)")
+#        result_url = search_response["search"]["actions"]["first"]
+#        result_response = API::get(result_url) 
+#        tube_uuid = result_response["tubes"].first["uuid"]
+#       # source_tube_uuids << tube_uuid 
+#
+#        if index == 0
+#          API::new_step("Find the order by tube uuid")
+#          parameters = {:search => {:description => "search for order",
+#                                    :model => "order",
+#                                    :criteria => {:item => {:uuid => tube_uuid}}}}
+#          search_response = API::post("searches", parameters)
+#
+#          API::new_step("Get the search results (order)")
+#          result_url = search_response["search"]["actions"]["first"]
+#          result_response = API::get(result_url)
+#          order = result_response["orders"].first
+#          order_uuid = order["uuid"]
+#        end
+#      end
+
+
+
+     # API::new_step("Create the search order by batch")
+     # parameters = {:search => {:description => "search order by batch",
+     #                           :model => "order",
+     #                           :criteria => {:item => {:batch => @batch_uuid}}}}
+     # search_response = API::post("searches", parameters)
+
+     # API::new_step("Get the result orders")
+     # result_url = search_response["search"]["actions"]["first"]
+     # result_response = API::get(result_url)
+
+
+     # API::new_step("Change the status of the order to pending")
+     # parameters = {:event => :build}
+     # API::put(order_uuid, parameters)
+
+     # API::new_step("Change the status of the order to in_progress")
+     # parameters = {:event => :start}
+     # API::put(order_uuid, parameters)
+
+#      API::new_step("Create new spin columns")
+ #     binding_spin_column_dna_uuids = factory(:spin_column, 2)
+
 
      # results = search_orders_by_batch
      # order_uuids = results[:order_uuids]
