@@ -38,7 +38,7 @@ module Lims::Api::Examples
 
       uuids.each do |e|
         API::new_step("Add a barcode to #{e[:uuid]}")
-        barcode(e[:uuid], barcode_values.pop) 
+        barcode(e[:uuid], barcode_values.shift) 
       end
 
       uuids.each do |e|
@@ -46,14 +46,31 @@ module Lims::Api::Examples
         API::get(e[:uuid])
       end
 
-      API::new_step("Add the new spin columns and new tubes in the order and start each of them")
-      binding_spin_column_dna_uuids = uuids.select { |e| e[:type] == "spin_column" }.map { |e| e[:uuid] }
-      by_product_tube_uuids = uuids.select { |e| e[:type] == "tube" }.map { |e| e[:uuid] }
-      parameters = parameters_for_adding_resources_in_order({
-        ROLE_BINDING_SPIN_COLUMN_DNA => binding_spin_column_dna_uuids,
-        ROLE_BY_PRODUCT_TUBE_RNAP => by_product_tube_uuids})
-      API::put(order_uuid, parameters)
+      API::new_step("Printer service")
+      API::mock_printer_service
 
+      result = search_orders_by_batch
+      initial_tube_uuids = result[:source_tube_uuids_array]
+
+      new_asset_uuids = [[uuids[0][:uuid], uuids[1][:uuid]], [uuids[2][:uuid], uuids[3][:uuid]]]
+      new_asset_uuids.each do |uuid|
+        API::new_step("Add the new spin column and new tube in the order and start each of them")
+        parameters = parameters_for_adding_resources_in_order({
+          ROLE_BINDING_SPIN_COLUMN_DNA => [uuid[0]],
+          ROLE_BY_PRODUCT_TUBE_RNAP => [uuid[1]]})
+        API::put(order_uuid, parameters)
+      end
+
+      transfer_uuids = [[initial_tube_uuids[0], uuids[0][:uuid], uuids[1][:uuid]], [initial_tube_uuids[1], uuids[2][:uuid], uuids[3][:uuid]]] 
+      transfer_uuids.each do |uuid|
+        API::new_step("Transfer from tube to spin column and tube")
+        parameters = {:transfer_tubes_to_tubes => {:transfers => [
+          {:source_uuid => uuid[0], :target_uuid => uuid[1], :fraction => 0.5, :aliquot_type => ALIQUOT_TYPE_DNA}, 
+          {:source_uuid => uuid[0], :target_uuid => uuid[2], :fraction => 0.5, :aliquot_type => ALIQUOT_TYPE_RNAP}
+        ]}}
+        API::post("actions/transfer_tubes_to_tubes", parameters)
+      end
+    
 
      # API::new_step("Create the search order by batch")
      # parameters = {:search => {:description => "search order by batch",
