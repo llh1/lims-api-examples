@@ -41,6 +41,11 @@ module Lims::Api::Examples
         barcode(e[:uuid], barcode_values.pop) 
       end
 
+      uuids.each do |e|
+        API::new_step("Get the barcoded resource")
+        API::get(e[:uuid])
+      end
+
       API::new_step("Add the new spin columns and new tubes in the order and start each of them")
       binding_spin_column_dna_uuids = uuids.select { |e| e[:type] == "spin_column" }.map { |e| e[:uuid] }
       by_product_tube_uuids = uuids.select { |e| e[:type] == "tube" }.map { |e| e[:uuid] }
