@@ -93,9 +93,9 @@ module Lims::Api::Examples
         API::get(tube_uuid)
       end
 
-      API::new_step("Add the kit barcode to the batch")
-      parameters = { :kit => KIT_BARCODE }
-      API::put(@batch_uuid, parameters)
+     # API::new_step("Add the kit barcode to the batch")
+     # parameters = { :kit => KIT_BARCODE }
+     # API::put(@batch_uuid, parameters)
 
       {:order_uuid => order_uuid}
     end
