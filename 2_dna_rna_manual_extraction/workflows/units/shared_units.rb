@@ -1,6 +1,4 @@
 require 'helpers/constant'
-require 'rubygems'
-require 'ruby-debug/debugger'
 
 module Lims::Api::Examples
   module SharedUnits
