@@ -23,12 +23,12 @@ module Lims::Api::Examples
         API::new_step("Create new spin column")
         parameters = {:spin_column => {}}
         response = API::post(@root_json["spin_columns"]["actions"]["create"], parameters)
-        uuids << {:type => "spin_column", :contents => "DNA", :uuid => response["spin_column"]["uuid"]}
+        uuids << {:read => response["spin_column"]["actions"]["read"], :type => "spin_column", :contents => "DNA", :uuid => response["spin_column"]["uuid"]}
 
         API::new_step("Create new tube")
         parameters = {:tube => {}}
         response = API::post(@root_json["tubes"]["actions"]["create"], parameters)
-        uuids << {:type => "tube", :contents => "RNA+P", :uuid => response["tube"]["uuid"]}
+        uuids << {:read => response["tube"]["actions"]["read"], :type => "tube", :contents => "RNA+P", :uuid => response["tube"]["uuid"]}
       end
 
       barcode_values = []
@@ -44,8 +44,7 @@ module Lims::Api::Examples
 
       uuids.each do |e|
         API::new_step("Get the barcoded resource")
-        #API::get("#{API::root}/#{e[:uuid]}")
-        API::get("#{API::root}/lims-laboratory/#{e[:uuid]}")
+        API::get(e[:read])
       end
 
       API::new_step("Printer service")
