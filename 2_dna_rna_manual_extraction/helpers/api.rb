@@ -2,8 +2,6 @@ require 'json'
 require 'rest_client'
 require 'facets'
 require 'helpers/constant'
-require 'rubygems'
-require 'ruby-debug/debugger'
 
 module Lims::Api::Examples
   module API
