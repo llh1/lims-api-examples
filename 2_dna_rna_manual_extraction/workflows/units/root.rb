@@ -6,7 +6,7 @@ module Lims::Api::Examples
     def root
      API::new_stage("Get the root JSON")
      API::new_step("Get the root JSON")
-     API::get("/")
+     @root_json = API::get_root
     end
   end
 end

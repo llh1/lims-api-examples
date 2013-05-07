@@ -1,4 +1,6 @@
 require 'helpers/constant'
+require 'rubygems'
+require 'ruby-debug/debugger'
 
 module Lims::Api::Examples
   module SharedUnits
@@ -12,6 +14,7 @@ module Lims::Api::Examples
       API::new_stage("Search the tubes by barcode and then search their corresponding order. Assign a batch to the tubes in the orders. Once the batch has been assigned, the tube gets the role binding.")
       # =======================================
       order_uuid = nil
+      order = nil
       @barcodes.each do |barcodes_array|
         source_tube_uuids = []
         tube_uuid = nil # just save the second tube uuid
@@ -22,7 +25,7 @@ module Lims::Api::Examples
                                     :criteria => {:label => {:position => "barcode",
                                                              :type => BARCODE_EAN13,
                                                              :value => barcode}}}}
-          search_response = API::post("searches", parameters)
+          search_response = API::post(@root_json["searches"]["actions"]["create"], parameters)
 
           API::new_step("Get the search result (tube)")
           result_url = search_response["search"]["actions"]["first"]
@@ -35,7 +38,7 @@ module Lims::Api::Examples
             parameters = {:search => {:description => "search for order",
                                       :model => "order",
                                       :criteria => {:item => {:uuid => tube_uuid}}}}
-            search_response = API::post("searches", parameters)
+            search_response = API::post(@root_json["searches"]["actions"]["create"], parameters)
 
             API::new_step("Get the search results (order)")
             result_url = search_response["search"]["actions"]["first"]
@@ -48,7 +51,7 @@ module Lims::Api::Examples
         unless @batch_uuid
           API::new_step("Create a new batch")
           parameters = {:batch => {}}
-          response = API::post("batches", parameters)
+          response = API::post(@root_json["batches"]["actions"]["create"], parameters)
           @batch_uuid = response["batch"]["uuid"]
         end
 
@@ -56,7 +59,7 @@ module Lims::Api::Examples
         parameters = {:search => {:description => "search for order",
                                   :model => "order",
                                   :criteria => {:item => {:uuid => tube_uuid}}}}
-        search_response = API::post("searches", parameters)
+        search_response = API::post(@root_json["searches"]["actions"]["create"], parameters)
 
         API::new_step("Get the search results (order)")
         result_url = search_response["search"]["actions"]["first"]
@@ -72,32 +75,33 @@ module Lims::Api::Examples
         parameters = {:items => {ROLE_TUBE_TO_BE_EXTRACTED_NAP => {}.tap do |h|
           source_tube_uuids.each { |uuid| h.merge!({uuid => {:batch_uuid => batch_uuid}}) }
         end }}
-        API::put(order_uuid, parameters)
+        API::put(order["actions"]["update"], parameters)
 
         search_orders_by_batch
 
         API::new_step("Add the tube_to_be_extracted_nap under the role binding_tube_to_be_extracted_nap and start them.")
         parameters = parameters_for_adding_resources_in_order(ROLE_BINDING_TUBE_TO_BE_EXTRACTED_NAP => source_tube_uuids)
-        API::put(order_uuid, parameters)
+        API::put(order["actions"]["update"], parameters)
 
         API::new_step("Change the status of binding_tube_to_be_extracted_nap to done. Change the status of tube_to_be_extracted_nap to unused.")
         parameters = parameters_for_changing_items_status({
           ROLE_TUBE_TO_BE_EXTRACTED_NAP => {:uuids => source_tube_uuids, :event => :unuse},
           ROLE_BINDING_TUBE_TO_BE_EXTRACTED_NAP => {:uuids => source_tube_uuids, :event => :complete}
         })
-        API::put(order_uuid, parameters)
+        API::put(order["actions"]["update"], parameters)
       end
       
       result = search_orders_by_batch
       result[:source_tube_uuids_array].each do |tube_uuid|
-        API::get(tube_uuid)
+        #API::get("#{API::root}/#{tube_uuid}")
+        API::get("#{API::root}/lims-laboratory/#{tube_uuid}")
       end
 
      # API::new_step("Add the kit barcode to the batch")
      # parameters = { :kit => KIT_BARCODE }
      # API::put(@batch_uuid, parameters)
 
-      {:order_uuid => order_uuid}
+      {:order_uuid => order_uuid, :order_update_url => order["actions"]["update"]}
     end
 
 
@@ -109,7 +113,7 @@ module Lims::Api::Examples
       parameters = {:search => {:description => "search order by batch",
                                 :model => "order",
                                 :criteria => {:item => {:batch => @batch_uuid}}}}
-      search_response = API::post("searches", parameters)
+      search_response = API::post(@root_json["searches"]["actions"]["create"], parameters)
 
       API::new_step("Get the result orders")
       result_url = search_response["search"]["actions"]["first"]

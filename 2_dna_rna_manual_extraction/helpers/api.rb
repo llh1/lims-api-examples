@@ -23,6 +23,10 @@ module Lims::Api::Examples
         init
       end
 
+      def root
+        @api_root
+      end
+
       def set_verbose(verbose)
         @verbose = verbose
       end
@@ -40,7 +44,7 @@ module Lims::Api::Examples
       end
 
       def init
-        @api = RestClient::Resource.new(@api_root)
+        @api = RestClient
         @stage = 0
         @output = {}
         @rspec_output = {}
@@ -97,7 +101,7 @@ module Lims::Api::Examples
         def post(url, parameters)
           parameters[parameters.keys.first] = {:user => Constant::USER}.merge(parameters[parameters.keys.first])
           json_parameters = parameters.to_json
-          response = JSON.parse(@api[url].post(json_parameters, HEADERS))
+          response = JSON.parse(@api.post(url, json_parameters, HEADERS))
           dump_request("post", url, parameters, response)
           response
         end
@@ -105,15 +109,21 @@ module Lims::Api::Examples
         def put(url, parameters)
           parameters = {:user => Constant::USER}.merge(parameters)
           json_parameters = parameters.to_json
-          response = JSON.parse(@api[url].put(json_parameters, HEADERS))
+          response = JSON.parse(@api.put(url, json_parameters, HEADERS))
           dump_request("put", url, parameters, response)
           response
         end
 
         def get(url)
-          url = url.sub(@api_root, '')
-          response = JSON.parse(@api[url].get(HEADERS))
+          #url = url.sub(@api_root, '')
+          response = JSON.parse(@api.get(url, HEADERS))
           dump_request("get", url, nil, response)
+          response
+        end
+
+        def get_root
+          response = JSON.parse(@api.get(@api_root, HEADERS))
+          dump_request("get", @api_root, nil, response)
           response
         end
       end
