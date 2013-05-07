@@ -16,17 +16,18 @@ module Lims::Api::Examples
     def dna_rna_manual_extraction_workflow
       parameters = assign_batch
       order_uuid = parameters[:order_uuid]
+      order_update_url = parameters[:order_update_url]
 
       uuids = []
       2.times do
         API::new_step("Create new spin column")
         parameters = {:spin_column => {}}
-        response = API::post("spin_columns", parameters)
+        response = API::post(@root_json["spin_columns"]["actions"]["create"], parameters)
         uuids << {:type => "spin_column", :contents => "DNA", :uuid => response["spin_column"]["uuid"]}
 
         API::new_step("Create new tube")
         parameters = {:tube => {}}
-        response = API::post("tubes", parameters)
+        response = API::post(@root_json["tubes"]["actions"]["create"], parameters)
         uuids << {:type => "tube", :contents => "RNA+P", :uuid => response["tube"]["uuid"]}
       end
 
@@ -43,7 +44,8 @@ module Lims::Api::Examples
 
       uuids.each do |e|
         API::new_step("Get the barcoded resource")
-        API::get(e[:uuid])
+        #API::get("#{API::root}/#{e[:uuid]}")
+        API::get("#{API::root}/lims-laboratory/#{e[:uuid]}")
       end
 
       API::new_step("Printer service")
@@ -58,7 +60,7 @@ module Lims::Api::Examples
         parameters = parameters_for_adding_resources_in_order({
           ROLE_BINDING_SPIN_COLUMN_DNA => [uuid[0]],
           ROLE_BY_PRODUCT_TUBE_RNAP => [uuid[1]]})
-        API::put(order_uuid, parameters)
+        API::put(order_update_url, parameters)
       end
 
       transfer_uuids = [[initial_tube_uuids[0], uuids[0][:uuid], uuids[1][:uuid]], [initial_tube_uuids[1], uuids[2][:uuid], uuids[3][:uuid]]] 
@@ -68,7 +70,7 @@ module Lims::Api::Examples
           {:source_uuid => uuid[0], :target_uuid => uuid[1], :fraction => 0.5, :aliquot_type => ALIQUOT_TYPE_DNA}, 
           {:source_uuid => uuid[0], :target_uuid => uuid[2], :fraction => 0.5, :aliquot_type => ALIQUOT_TYPE_RNAP}
         ]}}
-        API::post("actions/transfer_tubes_to_tubes", parameters)
+        API::post(@root_json["transfer_tubes_to_tubes"]["actions"]["create"], parameters)
       end
     
 

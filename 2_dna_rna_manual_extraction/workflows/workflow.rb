@@ -34,7 +34,7 @@ module Lims::Api::Examples
                                                               :value => barcode_value},
                                                 "sanger label" => {:type => "sanger-barcode",
                                                                    :value => "JD#{barcode_value}U"}}}}
-      API::post("labellables", parameters)
+      API::post(@root_json["labellables"]["actions"]["create"], parameters)
     end
 
     def batch_uuid 
