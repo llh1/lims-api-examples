@@ -1,6 +1,5 @@
 require 'sequel'
-require 'lims-core'
-require 'lims-core/persistence/sequel'
+require 'lims-laboratory-app'
 require 'optparse'
 
 # Setup the arguments passed to the script
@@ -11,7 +10,7 @@ OptionParser.new do |opts|
   opts.on("-v", "--verbose") { |v| options[:verbose] = true }
 end.parse!
 
-CONNECTION_STRING = options[:db] || "sqlite:///Users/llh1/Developer/lims-api/dev.db"
+CONNECTION_STRING = options[:db] || "sqlite:///Users/llh1/Developer/lims-laboratory-app/dev.db"
 DB = Sequel.connect(CONNECTION_STRING)
 STORE = Lims::Core::Persistence::Sequel::Store.new(DB)
 
@@ -25,11 +24,11 @@ end
 # - a valid user uuid
 # Add a user and a study in the core
 order_config = STORE.with_session do |session|
-  user = Lims::Core::Organization::User.new
+  user = Lims::LaboratoryApp::Organization::User.new
   session << user
   user_uuid = session.uuid_for!(user)
 
-  study = Lims::Core::Organization::Study.new
+  study = Lims::LaboratoryApp::Organization::Study.new
   session << study
   study_uuid = session.uuid_for!(study)
 
@@ -54,7 +53,7 @@ pipelines.each do |pipeline|
   # Create 3 samples
   sample_uuids = [0, 1, 2].map do |i|
     STORE.with_session do |session|
-      sample = Lims::Core::Laboratory::Sample.new(:name => "sample_#{i}")
+      sample = Lims::LaboratoryApp::Laboratory::Sample.new(:name => "sample_#{i}")
       session << sample
       sample_uuid = session.uuid_for!(sample)
 
@@ -66,17 +65,17 @@ pipelines.each do |pipeline|
   labelled_tubes = [0, 1, 2]
   labelled_tubes.map! do |i|
     STORE.with_session do |session|
-      tube = Lims::Core::Laboratory::Tube.new
-      tube << Lims::Core::Laboratory::Aliquot.new(:sample => session[sample_uuids[i]],
+      tube = Lims::LaboratoryApp::Laboratory::Tube.new
+      tube << Lims::LaboratoryApp::Laboratory::Aliquot.new(:sample => session[sample_uuids[i]],
                                                   :type => pipeline[:initial_type],
                                                   :quantity => 1000)
       session << tube
       tube_uuid = session.uuid_for!(tube)
 
-      labellable = Lims::Core::Laboratory::Labellable.new(:name => tube_uuid, :type => "resource")
-      labellable["barcode"] = Lims::Core::Laboratory::Labellable::Label.new(:type => "ean13-barcode", 
+      labellable = Lims::LaboratoryApp::Labels::Labellable.new(:name => tube_uuid, :type => "resource")
+      labellable["barcode"] = Lims::LaboratoryApp::Labels::Labellable::Label.new(:type => "ean13-barcode", 
                                                                             :value => ean13_barcodes.pop)
-      labellable["sanger label"] = Lims::Core::Laboratory::Labellable::Label.new(:type => "sanger-barcode", 
+      labellable["sanger label"] = Lims::LaboratoryApp::Labels::Labellable::Label.new(:type => "sanger-barcode", 
                                                                                  :value => sanger_barcodes.pop)
       session << labellable
       labellable_uuid = session.uuid_for!(labellable)
@@ -90,7 +89,7 @@ pipelines.each do |pipeline|
   tube_uuids = labelled_tubes.map {|a| a[:tube_uuid]} 
   order_uuids = [[tube_uuids[0], tube_uuids[1]], [tube_uuids[2]]].map do |source_tubes|
     STORE.with_session do |session|
-      order = Lims::Core::Organization::Order.new(:creator => session.user[order_config[:user_id]],
+      order = Lims::LaboratoryApp::Organization::Order.new(:creator => session.user[order_config[:user_id]],
                                                   :study => session.study[order_config[:study_id]],
                                                   :pipeline => pipeline[:name],
                                                   :cost_code => "cost code")

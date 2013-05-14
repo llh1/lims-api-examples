@@ -1,7 +1,6 @@
 require 'lims-api-examples'
 require 'json'
-require 'lims-core'
-require 'lims-core/persistence/sequel'
+require 'lims-laboratory-app'
 require 'sequel'
 require 'optparse'
 require 'helpers/constant'
@@ -20,7 +19,7 @@ module Lims::Api::Examples
     opts.on("-m", "--mode [MODE]") { |v| options[:mode] = v }
   end.parse!
 
-  CONNECTION_STRING = options[:db] || "sqlite:///Users/llh1/Developer/lims-api/dev.db"
+  CONNECTION_STRING = options[:db] || "sqlite:///Users/llh1/Developer/lims-laboratory-app/dev.db"
   API_ROOT = options[:api]
   MODE = options[:mode] || "manual"
   DB = Sequel.connect(CONNECTION_STRING)
@@ -49,11 +48,11 @@ module Lims::Api::Examples
   # - a valid user uuid
   # Add a user and a study in the core
   order_config = STORE.with_session do |session|
-    user = Lims::Core::Organization::User.new
+    user = Lims::LaboratoryApp::Organization::User.new
     session << user
     user_uuid = session.uuid_for!(user)
 
-    study = Lims::Core::Organization::Study.new
+    study = Lims::LaboratoryApp::Organization::Study.new
     session << study
     study_uuid = session.uuid_for!(study)
 
@@ -73,7 +72,7 @@ module Lims::Api::Examples
     # Create the needed samples
     sample_uuids = [0, 1, 2].map do |i|
       STORE.with_session do |session|
-        sample = Lims::Core::Laboratory::Sample.new(:name => "sample_#{i}")
+        sample = Lims::LaboratoryApp::Laboratory::Sample.new(:name => "sample_#{i}")
         session << sample
         sample_uuid = session.uuid_for!(sample)
 
@@ -104,16 +103,16 @@ module Lims::Api::Examples
         {:tube_uuid => tube_uuid, :labellable_uuid => labellable_uuid}
       else
         STORE.with_session do |session|
-          tube = Lims::Core::Laboratory::Tube.new
-          tube << Lims::Core::Laboratory::Aliquot.new(:sample => session[sample_uuids[i]],
+          tube = Lims::LaboratoryApp::Laboratory::Tube.new
+          tube << Lims::LaboratoryApp::Laboratory::Aliquot.new(:sample => session[sample_uuids[i]],
                                                       :type => DnaRnaManualExtraction::SOURCE_TUBE_ALIQUOT_TYPE,
                                                       :quantity => INITIAL_QUANTITY)
           session << tube
           tube_uuid = session.uuid_for!(tube)
 
-          labellable = Lims::Core::Laboratory::Labellable.new(:name => tube_uuid, :type => "resource")
-          labellable["barcode"] = Lims::Core::Laboratory::Labellable::Label.new(:type => BARCODE_EAN13, 
-                                                                                :value => DnaRnaManualExtraction::SOURCE_TUBE_BARCODES[i])
+          labellable = Lims::LaboratoryApp::Labels::Labellable.new(:name => tube_uuid, :type => "resource")
+          labellable["barcode"] = Lims::LaboratoryApp::Labels::Labellable::Label.new(:type => BARCODE_EAN13, 
+                                                                                     :value => DnaRnaManualExtraction::SOURCE_TUBE_BARCODES[i])
           session << labellable
           labellable_uuid = session.uuid_for!(labellable)
 
@@ -137,7 +136,7 @@ module Lims::Api::Examples
       else
         STORE.with_session do |session|
           # First order with 2 tubes
-          order = Lims::Core::Organization::Order.new(:creator => session.user[order_config[:user_id]],
+          order = Lims::LaboratoryApp::Organization::Order.new(:creator => session.user[order_config[:user_id]],
                                                       :study => session.study[order_config[:study_id]],
                                                       :pipeline => DnaRnaManualExtraction::ORDER_PIPELINE,
                                                       :cost_code => "cost code")
@@ -178,12 +177,12 @@ module Lims::Api::Examples
   when "automatic" then
     # Create the tube for automated extraction pipeline 
     tube_automated_uuid = STORE.with_session do |session|
-      tube = Lims::Core::Laboratory::Tube.new
+      tube = Lims::LaboratoryApp::Laboratory::Tube.new
       session << tube
       tube_uuid = session.uuid_for!(tube)
 
-      labellable = Lims::Core::Laboratory::Labellable.new(:name => tube_uuid, :type => "resource")
-      labellable["barcode"] = Lims::Core::Laboratory::Labellable::Label.new(:type => BARCODE_EAN13, 
+      labellable = Lims::LaboratoryApp::Labels::Labellable.new(:name => tube_uuid, :type => "resource")
+      labellable["barcode"] = Lims::LaboratoryApp::Labels::Labellable::Label.new(:type => BARCODE_EAN13, 
                                                                             :value => DnaRnaAutomatedExtraction::SOURCE_TUBE_BARCODE)
       session << labellable
       session.uuid_for!(labellable)
@@ -193,7 +192,7 @@ module Lims::Api::Examples
 
     # Create the order with the tube
     STORE.with_session do |session|
-      order = Lims::Core::Organization::Order.new(:creator => session.user[order_config[:user_id]],
+      order = Lims::LaboratoryApp::Organization::Order.new(:creator => session.user[order_config[:user_id]],
                                                   :study => session.study[order_config[:study_id]],
                                                   :pipeline => DnaRnaAutomatedExtraction::ORDER_PIPELINE,
                                                   :cost_code => "cost code")
