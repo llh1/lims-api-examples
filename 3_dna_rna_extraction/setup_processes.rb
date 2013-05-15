@@ -1,5 +1,10 @@
 require 'sequel'
 require 'lims-laboratory-app'
+require 'lims-support-app/kit/kit'
+require 'lims-support-app/kit/kit_persistor'
+require 'lims-support-app/kit/kit_sequel_persistor'
+require 'lims-core/persistence/sequel'
+require 'lims-core/persistence/sequel/filters'
 require 'optparse'
 
 # Setup the arguments passed to the script
@@ -15,7 +20,7 @@ DB = Sequel.connect(CONNECTION_STRING)
 STORE = Lims::Core::Persistence::Sequel::Store.new(DB)
 
 %w{items orders batches searches labels labellables tube_aliquots spin_column_aliquots  
-    aliquots tube_rack_slots tube_racks tubes spin_columns studies users uuid_resources samples}.each do |table|
+    aliquots tube_rack_slots tube_racks tubes spin_columns studies users uuid_resources samples kits}.each do |table|
   DB[table.to_sym].delete
 end
 
@@ -59,6 +64,26 @@ pipelines.each do |pipeline|
 
       lambda { sample_uuid }
     end.call
+  end
+
+  # create 9 kits for the process
+  # create 3 Kits with expiration date is later than today and amount is greater than 0
+  # create 3 expired Kits
+  # create 3 Kits with expiration date is later than today and amount is equals to 0
+  aliquot_types = ["DNA", "RNA", "DNA+RNA"]
+  expiry_dates = [Date::civil(2014,05,01), Date::civil(2013,01,01), Date::civil(2014,05,01)]
+  amounts = [10, 10, 0]
+  expiry_dates.zip(amounts) do |expiry_date, amount|
+    valid_kit_uuids = [0, 1, 2].map do |i|
+      STORE.with_session do |session|
+        kit = Lims::SupportApp::Kit.new(:process => pipeline[:name], :aliquot_type => aliquot_types[i],
+          :expires => expiry_date, :amount => amount)
+        session << kit
+        kit_uuid = session.uuid_for!(kit)
+
+        lambda { kit_uuid }
+      end.call
+    end
   end
 
   # Create 3 tubes
