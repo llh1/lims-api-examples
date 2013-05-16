@@ -44,12 +44,14 @@ order_config = STORE.with_session do |session|
 end.call
 
 
-pipelines = [{:name => "manual RNA only", :initial_type => "RNA+P", :initial_role => "samples.extraction.manual.rna_only.input_tube_rnap"},
-             {:name => "manual DNA only", :initial_type => "DNA+P", :initial_role => "samples.extraction.manual.dna_only.input_tube_dnap"}, 
-             {:name => "manual RNA & DNA extraction", :initial_type => "NA+P", :initial_role => "samples.extraction.manual.dna_and_rna.input_tube_nap"},
-             {:name => "QIAcube RNA only", :initial_type => "RNA+P", :initial_role => "samples.extraction.qiacube.rna_only.input_tube_rnap"}, 
-             {:name => "QIAcube DNA only", :initial_type => "DNA+P", :initial_role => "samples.extraction.qiacube.dna_only.input_tube_dnap"},
-             {:name => "QIAcube RNA & DNA extraction", :initial_type => "NA+P", :initial_role => "samples.extraction.qiacube.dna_and_rna.input_tube_nap"}]
+pipelines = [
+  {name: "manual RNA only",              initial_type: "RNA+P", initial_role: "samples.extraction.manual.rna_only.input_tube_rnap"   },
+  {name: "manual DNA only",              initial_type: "DNA+P", initial_role: "samples.extraction.manual.dna_only.input_tube_dnap"   },
+  {name: "manual RNA & DNA extraction",  initial_type: "NA+P",  initial_role: "samples.extraction.manual.dna_and_rna.input_tube_nap" },
+  {name: "QIAcube RNA only",             initial_type: "RNA+P", initial_role: "samples.extraction.qiacube.rna_only.input_tube_rnap"  },
+  {name: "QIAcube DNA only",             initial_type: "DNA+P", initial_role: "samples.extraction.qiacube.dna_only.input_tube_dnap"  },
+  {name: "QIAcube RNA & DNA extraction", initial_type: "NA+P",  initial_role: "samples.extraction.qiacube.dna_and_rna.input_tube_nap"}
+]
 
 ean13_barcodes = ["2748670880727", "2741854757853", "2748746359751", "2747595068692", "2740339747792", "2742794419689", "2864342335729", "2862020760818", "2861142419659", "2864843093845", "2861652094766", "2868634585687", "2883368706764", "2888290344824", "2887672984771", "2882890700769", "2885978789816", "2888089913668"] 
 sanger_barcodes = ["JD8670880H", "JD1854757U", "JD8746359K", "JD7595068E", "JD0339747O", "JD2794419D", "JP4342335H", "JP2020760Q", "JP1142419A", "JP4843093T", "JP1652094L", "JP8634585D", "JR3368706L", "JR8290344R", "JR7672984M", "JR2890700L", "JR5978789Q", "JR8089913B"] 
@@ -71,13 +73,17 @@ pipelines.each do |pipeline|
   # create 3 expired Kits
   # create 3 Kits with expiration date is later than today and amount is equals to 0
   aliquot_types = ["DNA", "RNA", "DNA+RNA"]
-  expiry_dates = [Date::civil(2014,05,01), Date::civil(2013,01,01), Date::civil(2014,05,01)]
-  amounts = [10, 10, 0]
+  expiry_dates  = [Date::civil(2014,05,01), Date::civil(2013,01,01), Date::civil(2014,05,01)]
+  amounts       = [10, 10, 0]
   expiry_dates.zip(amounts) do |expiry_date, amount|
     valid_kit_uuids = [0, 1, 2].map do |i|
       STORE.with_session do |session|
-        kit = Lims::SupportApp::Kit.new(:process => pipeline[:name], :aliquot_type => aliquot_types[i],
-          :expires => expiry_date, :amount => amount)
+        kit = Lims::SupportApp::Kit.new(
+          :process      => pipeline[:name],
+          :aliquot_type => aliquot_types[i],
+          :expires      => expiry_date,
+          :amount       => amount
+        )
         session << kit
         kit_uuid = session.uuid_for!(kit)
 
@@ -91,9 +97,11 @@ pipelines.each do |pipeline|
   labelled_tubes.map! do |i|
     STORE.with_session do |session|
       tube = Lims::LaboratoryApp::Laboratory::Tube.new
-      tube << Lims::LaboratoryApp::Laboratory::Aliquot.new(:sample => session[sample_uuids[i]],
-                                                  :type => pipeline[:initial_type],
-                                                  :quantity => 1000)
+      tube << Lims::LaboratoryApp::Laboratory::Aliquot.new(
+        :sample   => session[sample_uuids[i]],
+        :type     => pipeline[:initial_type],
+        :quantity => 1000
+      )
       session << tube
       tube_uuid = session.uuid_for!(tube)
 
