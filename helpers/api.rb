@@ -37,10 +37,8 @@ module Lims
 
         def init
           @api = RestClient
-          @stage = 0
           @output = {}
           @barcode_counter = 0
-          @order = "common"
         end
         private :init
 
@@ -106,12 +104,6 @@ module Lims
             @recording = false
           end
 
-          def new_stage(description = "")
-            @stage += 1
-            @display_stage = true
-            @stage_description = description
-          end
-
           def new_step(description = "")
             @step_description = description
           end
@@ -154,11 +146,11 @@ module Lims
                 end
               end
             elsif method == 'get'
-              x_new_stage(url, response) 
+              new_stage(url, response) 
             end
           end
 
-          def x_new_stage(url,response)
+          def new_stage(url,response)
             call = new_call('get', url, nil, response)
             if @counter == 0
               @output[:default][:calls] << call 
@@ -174,18 +166,6 @@ module Lims
             call[:response] = response
             call[:next_stage] = next_stage if next_stage
             call
-          end
-
-          def add_output(method, url, request, response)
-            @output[@order] ||= {} unless @output.has_key?(@order)
-            stage_description = @order.is_a?(Fixnum) ? "[Order #{@order}] #{@stage_description}" : @stage_description
-            @output[@order][@stage] = {:stage => stage_description, :steps => []} unless @output[@order].has_key?(@stage)
-            @output[@order][@stage][:steps] << {:description => @step_description, :method => method, :url => "/#{url.sub(/^\//, "")}", :request => request, :response => response}
-            reset_step
-          end
-
-          def reset_step
-            @step_description = ""
           end
         end
       end
