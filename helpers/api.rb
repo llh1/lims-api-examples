@@ -91,8 +91,8 @@ module Lims
           end
 
           def get_root
-            response = JSON.parse(@api.get(@root, HEADERS))
-            dump_request("get", @root, nil, response)
+            response = JSON.parse(@api.get(root, HEADERS))
+            dump_request("get", root, nil, response)
             response
           end
         end
@@ -119,7 +119,6 @@ module Lims
           def dump_request(method, url, parameters, response)
             if @recording
               new_output(method, url, parameters, response) if @path
-              add_print_screen(method, url, parameters, response) if @verbose
             end
             @display_stage = false
           end
@@ -177,19 +176,6 @@ module Lims
             call
           end
 
-          def formatted_output
-            output = @output.clone
-            common = output.delete("common")
-            formated = [].tap do |arr|
-              output.each do |k,v|
-                arr << v
-              end
-            end.map { |a| a.to_a }.transpose.flatten
-            formated = Hash[*formated]
-            i = 0
-            common.merge(formated).rekey! { |k| i += 1; i}
-          end
-
           def add_output(method, url, request, response)
             @output[@order] ||= {} unless @output.has_key?(@order)
             stage_description = @order.is_a?(Fixnum) ? "[Order #{@order}] #{@stage_description}" : @stage_description
@@ -200,18 +186,6 @@ module Lims
 
           def reset_step
             @step_description = ""
-          end
-
-          def add_print_screen(method, url, parameters, response)
-            if @display_stage
-              puts "Stage #{@stage}"
-              puts @stage_description
-              puts
-            end
-            puts "#{method.upcase} /#{url.sub(/^\//, '')}"
-            puts "< #{parameters.to_json}" if parameters
-            puts "> #{response.to_json}" if response
-            puts
           end
         end
       end
