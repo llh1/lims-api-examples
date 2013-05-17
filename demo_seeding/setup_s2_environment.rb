@@ -45,16 +45,38 @@ end.call
 
 
 pipelines = [
-  {name: "manual RNA only",              initial_type: "RNA+P", initial_role: "samples.extraction.manual.rna_only.input_tube_rnap"   },
-  {name: "manual DNA only",              initial_type: "DNA+P", initial_role: "samples.extraction.manual.dna_only.input_tube_dnap"   },
-  {name: "manual RNA & DNA extraction",  initial_type: "NA+P",  initial_role: "samples.extraction.manual.dna_and_rna.input_tube_nap" },
-  {name: "QIAcube RNA only",             initial_type: "RNA+P", initial_role: "samples.extraction.qiacube.rna_only.input_tube_rnap"  },
-  {name: "QIAcube DNA only",             initial_type: "DNA+P", initial_role: "samples.extraction.qiacube.dna_only.input_tube_dnap"  },
-  {name: "QIAcube RNA & DNA extraction", initial_type: "NA+P",  initial_role: "samples.extraction.qiacube.dna_and_rna.input_tube_nap"}
+  {name: "manual RNA only",              kit_type: "RNA",     initial_type: "RNA+P", initial_role: "samples.extraction.manual.rna_only.input_tube_rnap"   },
+  {name: "manual DNA only",              kit_type: "DNA",     initial_type: "DNA+P", initial_role: "samples.extraction.manual.dna_only.input_tube_dnap"   },
+  {name: "manual RNA & DNA extraction",  kit_type: "DNA+RNA", initial_type: "NA+P",  initial_role: "samples.extraction.manual.dna_and_rna.input_tube_nap" },
+  {name: "QIAcube RNA only",             kit_type: "RNA",     initial_type: "RNA+P", initial_role: "samples.extraction.qiacube.rna_only.input_tube_rnap"  },
+  {name: "QIAcube DNA only",             kit_type: "DNA",     initial_type: "DNA+P", initial_role: "samples.extraction.qiacube.dna_only.input_tube_dnap"  },
+  {name: "QIAcube RNA & DNA extraction", kit_type: "DNA+RNA", initial_type: "NA+P",  initial_role: "samples.extraction.qiacube.dna_and_rna.input_tube_nap"}
 ]
 
-ean13_barcodes = ["2748670880727", "2741854757853", "2748746359751", "2747595068692", "2740339747792", "2742794419689", "2864342335729", "2862020760818", "2861142419659", "2864843093845", "2861652094766", "2868634585687", "2883368706764", "2888290344824", "2887672984771", "2882890700769", "2885978789816", "2888089913668"] 
-sanger_barcodes = ["JD8670880H", "JD1854757U", "JD8746359K", "JD7595068E", "JD0339747O", "JD2794419D", "JP4342335H", "JP2020760Q", "JP1142419A", "JP4843093T", "JP1652094L", "JP8634585D", "JR3368706L", "JR8290344R", "JR7672984M", "JR2890700L", "JR5978789Q", "JR8089913B"] 
+ean13_barcodes = Object.new.tap do |o|
+  class << o
+    attr_accessor :last_barcode
+  end
+  o.last_barcode = 8800000000000
+
+  def o.pop
+    self.last_barcode += 1
+    self.last_barcode.to_s
+  end
+end
+
+
+sanger_barcodes = Object.new.tap do |o|
+  class << o
+    attr_accessor :last_barcode
+  end
+  o.last_barcode = 8800000
+
+  def o.pop
+    self.last_barcode += 1
+    "JD#{self.last_barcode}L"
+  end
+end
 
 pipelines.each do |pipeline|
   # Create 3 samples
@@ -68,28 +90,33 @@ pipelines.each do |pipeline|
     end.call
   end
 
-  # create 9 kits for the process
-  # create 3 Kits with expiration date is later than today and amount is greater than 0
-  # create 3 expired Kits
-  # create 3 Kits with expiration date is later than today and amount is equals to 0
-  aliquot_types = ["DNA", "RNA", "DNA+RNA"]
-  expiry_dates  = [Date::civil(2014,05,01), Date::civil(2013,01,01), Date::civil(2014,05,01)]
-  amounts       = [10, 10, 0]
-  expiry_dates.zip(amounts) do |expiry_date, amount|
-    valid_kit_uuids = [0, 1, 2].map do |i|
-      STORE.with_session do |session|
-        kit = Lims::SupportApp::Kit.new(
-          :process      => pipeline[:name],
-          :aliquot_type => aliquot_types[i],
-          :expires      => expiry_date,
-          :amount       => amount
-        )
-        session << kit
-        kit_uuid = session.uuid_for!(kit)
 
-        lambda { kit_uuid }
-      end.call
-    end
+  expiry_dates_amounts  = [
+    [Date::civil(2014,05,01), 10],
+    [Date::civil(2013,01,01), 10],
+    [Date::civil(2014,05,01), 0 ]
+  ]
+
+  expiry_dates_amounts.each do |expiry_date, amount|
+    STORE.with_session do |session|
+      kit = Lims::SupportApp::Kit.new(
+        :process      => pipeline[:name],
+        :aliquot_type => pipeline[:kit_type],
+        :expires      => expiry_date,
+        :amount       => amount
+      )
+      session << kit
+      kit_uuid = session.uuid_for!(kit)
+
+      labellable                 = Lims::LaboratoryApp::Labels::Labellable.new(       :type => "resource",       :name => kit_uuid)
+      labellable["barcode"]      = Lims::LaboratoryApp::Labels::Labellable::Label.new(:type => "ean13-barcode",  :value => ean13_barcodes.pop)
+      labellable["sanger label"] = Lims::LaboratoryApp::Labels::Labellable::Label.new(:type => "sanger-barcode", :value => sanger_barcodes.pop)
+
+      session << labellable
+      labellable_uuid = session.uuid_for!(labellable)
+
+      lambda { {:kit_uuid => kit_uuid, :labellable_uuid => labellable_uuid} }
+    end.call
   end
 
   # Create 3 tubes
@@ -106,10 +133,11 @@ pipelines.each do |pipeline|
       tube_uuid = session.uuid_for!(tube)
 
       labellable = Lims::LaboratoryApp::Labels::Labellable.new(:name => tube_uuid, :type => "resource")
-      labellable["barcode"] = Lims::LaboratoryApp::Labels::Labellable::Label.new(:type => "ean13-barcode", 
-                                                                            :value => ean13_barcodes.pop)
-      labellable["sanger label"] = Lims::LaboratoryApp::Labels::Labellable::Label.new(:type => "sanger-barcode", 
-                                                                                 :value => sanger_barcodes.pop)
+
+      labellable["barcode"] = Lims::LaboratoryApp::Labels::Labellable::Label.new(:type => "ean13-barcode", :value => ean13_barcodes.pop)
+
+      labellable["sanger label"] = Lims::LaboratoryApp::Labels::Labellable::Label.new(:type => "sanger-barcode", :value => sanger_barcodes.pop)
+
       session << labellable
       labellable_uuid = session.uuid_for!(labellable)
 
@@ -123,9 +151,9 @@ pipelines.each do |pipeline|
   order_uuids = [[tube_uuids[0], tube_uuids[1]], [tube_uuids[2]]].map do |source_tubes|
     STORE.with_session do |session|
       order = Lims::LaboratoryApp::Organization::Order.new(:creator => session.user[order_config[:user_id]],
-                                                  :study => session.study[order_config[:study_id]],
-                                                  :pipeline => pipeline[:name],
-                                                  :cost_code => "cost code")
+                                                           :study => session.study[order_config[:study_id]],
+                                                           :pipeline => pipeline[:name],
+                                                           :cost_code => "cost code")
       order.add_source(pipeline[:initial_role], source_tubes)
       session << order
       order_uuid = session.uuid_for!(order)
