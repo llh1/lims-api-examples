@@ -9,35 +9,40 @@ module Lims::Examples
         order_uuid = @order_uuid
         order_update_url = @order_update_url
 
+        # Create 2 spin columns and 2 tubes
         uuids = []
         2.times do
-          API::new_step("Create new spin column")
+          API::new_step("Create a new spin column")
           parameters = {:spin_column => {}}
           response = API::post(@root_json["spin_columns"]["actions"]["create"], parameters)
           uuids << {:read => response["spin_column"]["actions"]["read"], :type => "spin_column", :contents => "DNA", :uuid => response["spin_column"]["uuid"]}
 
-          API::new_step("Create new tube")
+          API::new_step("Create a new tube")
           parameters = {:tube => {}}
           response = API::post(@root_json["tubes"]["actions"]["create"], parameters)
           uuids << {:read => response["tube"]["actions"]["read"], :type => "tube", :contents => "RNA+P", :uuid => response["tube"]["uuid"]}
         end
 
+        # Create 4 barcodes
         barcode_values = []
         uuids.each do |e|
           API::new_step("Generate a new barcode")
           barcode_values << API::mock_barcode_generation(e[:type], e[:contents])          
         end
 
+        # Assign barcodes to the new tubes and spin columns
         uuids.each do |e|
-          API::new_step("Add a barcode to #{e[:uuid]}")
+          API::new_step("Assign a barcode to the #{e[:type]} with the uuid=#{e[:uuid]}")
           barcode(e[:uuid], barcode_values.shift) 
         end
 
+        # Get the barcoded resources
         uuids.each do |e|
-          API::new_step("Get the barcoded resource")
+          API::new_step("Get the barcoded #{e[:type]}")
           API::get(e[:read])
         end
 
+        # Printer service
         API::new_step("Printer service")
         API::mock_printer_service
 

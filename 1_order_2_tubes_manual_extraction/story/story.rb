@@ -25,13 +25,11 @@ module Lims::Examples
       private
 
       def root
-        API::new_stage("Get the root JSON")
         API::new_step("Get the root JSON")
         @root_json = API::get_root
       end
 
       def search_orders_by_batch
-        API::new_stage("Search the orders by batch")
         API::new_step("Create the search order by batch")
         parameters = {:search => {:description => "search order by batch",
                                   :model => "order",

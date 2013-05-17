@@ -6,7 +6,6 @@ module Lims::Examples
       include Constant
 
       def load_tubes_and_assign_batch
-        API::new_stage("Search the tubes by barcode and then search their corresponding order. Assign a batch to the tubes in the orders. Once the batch has been assigned, the tube gets the role binding.")
         order_uuid = nil
         order = nil
         source_tube_uuids = []
