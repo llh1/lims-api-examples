@@ -27,7 +27,6 @@ end
 # Needed for the order creation
 # - a valid study uuid
 # - a valid user uuid
-# Add a user and a study in the core
 order_config = STORE.with_session do |session|
   user = Lims::LaboratoryApp::Organization::User.new
   session << user
@@ -52,6 +51,7 @@ pipelines = [
   {name: "QIAcube DNA only",             kit_type: "DNA",     initial_type: "DNA+P", initial_role: "samples.extraction.qiacube.dna_only.input_tube_dnap"  },
   {name: "QIAcube RNA & DNA extraction", kit_type: "DNA+RNA", initial_type: "NA+P",  initial_role: "samples.extraction.qiacube.dna_and_rna.input_tube_nap"}
 ]
+
 
 ean13_barcodes = Object.new.tap do |o|
   class << o
@@ -79,6 +79,11 @@ sanger_barcodes = Object.new.tap do |o|
 end
 
 pipelines.each do |pipeline|
+  if options[:verbose] 
+    puts "Seed #{pipeline[:name]}" 
+    puts "=============="
+  end
+
   # Create 3 samples
   sample_uuids = [0, 1, 2].map do |i|
     STORE.with_session do |session|
@@ -89,7 +94,6 @@ pipelines.each do |pipeline|
       lambda { sample_uuid }
     end.call
   end
-
 
   expiry_dates_amounts  = [
     [Date::civil(2014,05,01), 10],
@@ -108,12 +112,18 @@ pipelines.each do |pipeline|
       session << kit
       kit_uuid = session.uuid_for!(kit)
 
+      barcode_value = ean13_barcodes.pop
+      sanger_barcode_value = sanger_barcodes.pop
       labellable                 = Lims::LaboratoryApp::Labels::Labellable.new(       :type => "resource",       :name => kit_uuid)
-      labellable["barcode"]      = Lims::LaboratoryApp::Labels::Labellable::Label.new(:type => "ean13-barcode",  :value => ean13_barcodes.pop)
-      labellable["sanger label"] = Lims::LaboratoryApp::Labels::Labellable::Label.new(:type => "sanger-barcode", :value => sanger_barcodes.pop)
+      labellable["barcode"]      = Lims::LaboratoryApp::Labels::Labellable::Label.new(:type => "ean13-barcode",  :value => barcode_value)
+      labellable["sanger label"] = Lims::LaboratoryApp::Labels::Labellable::Label.new(:type => "sanger-barcode", :value => sanger_barcode_value)
 
       session << labellable
       labellable_uuid = session.uuid_for!(labellable)
+
+      if options[:verbose]
+        puts "Kit created with ean13-barcode=#{barcode_value}, sanger-barcode=#{sanger_barcode_value}"
+      end
 
       lambda { {:kit_uuid => kit_uuid, :labellable_uuid => labellable_uuid} }
     end.call
@@ -132,14 +142,18 @@ pipelines.each do |pipeline|
       session << tube
       tube_uuid = session.uuid_for!(tube)
 
+      barcode_value = ean13_barcodes.pop 
+      sanger_barcode_value = sanger_barcodes.pop
       labellable = Lims::LaboratoryApp::Labels::Labellable.new(:name => tube_uuid, :type => "resource")
-
-      labellable["barcode"] = Lims::LaboratoryApp::Labels::Labellable::Label.new(:type => "ean13-barcode", :value => ean13_barcodes.pop)
-
-      labellable["sanger label"] = Lims::LaboratoryApp::Labels::Labellable::Label.new(:type => "sanger-barcode", :value => sanger_barcodes.pop)
+      labellable["barcode"] = Lims::LaboratoryApp::Labels::Labellable::Label.new(:type => "ean13-barcode", :value => barcode_value)
+      labellable["sanger label"] = Lims::LaboratoryApp::Labels::Labellable::Label.new(:type => "sanger-barcode", :value => sanger_barcode_value)
 
       session << labellable
       labellable_uuid = session.uuid_for!(labellable)
+
+      if options[:verbose]
+        puts "Tube created with ean13-barcode=#{barcode_value}, sanger-barcode=#{sanger_barcode_value}"
+      end
 
       lambda { {:tube_uuid => tube_uuid, :labellable_uuid => labellable_uuid} }
     end.call
@@ -158,7 +172,13 @@ pipelines.each do |pipeline|
       session << order
       order_uuid = session.uuid_for!(order)
 
+      if options[:verbose]
+        puts "Order created with #{source_tubes.size} tubes"
+      end
+
       lambda { order_uuid }
     end.call
   end
+
+  puts if options[:verbose]
 end
