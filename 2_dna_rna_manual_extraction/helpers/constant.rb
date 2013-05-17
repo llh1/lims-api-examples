@@ -20,11 +20,10 @@ module Lims::Api::Examples
     module DnaRnaManualExtraction
       ORDER_PIPELINE = "DNA+RNA manual extraction"
       KIT_BARCODE = "1234567891011"
-      
+
       SOURCE_TUBE_BARCODES = ["1220017279667", "1220017279668", "1220017279669"]
-      
+
       SOURCE_TUBE_ALIQUOT_TYPE = ALIQUOT_TYPE_NAP
-      
       #ROLE_TUBE_TO_BE_EXTRACTED_RNAP = "tube_to_be_extracted_rnap"
       ROLE_TUBE_TO_BE_EXTRACTED_RNAP = "samples.extraction.manual.dna_and_rna.binding_input_tube_rnap"
       #ROLE_BINDING_TUBE_TO_BE_EXTRACTED_NAP = "binding_tube_to_be_extracted_nap"
