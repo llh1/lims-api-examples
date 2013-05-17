@@ -27,10 +27,10 @@ GIT
 
 GIT
   remote: http://github.com/sanger/lims-laboratory-app.git
-  revision: 57226739099cfbb0a01ba617cbbd5a23fcb139bd
+  revision: d5d942da85966afe5cd6c82824ee7de4e0a0e797
   branch: master
   specs:
-    lims-laboratory-app (1.0.2)
+    lims-laboratory-app (1.0.3)
 
 GIT
   remote: http://github.com/sanger/lims-support-app.git
@@ -112,7 +112,7 @@ DEPENDENCIES
   lims-api (~> 2.0)!
   lims-api-examples!
   lims-core (~> 2.0)!
-  lims-laboratory-app (~> 1.0.2)!
+  lims-laboratory-app (~> 1.0.3)!
   lims-support-app (= 0.0.1)!
   mysql
   rake
