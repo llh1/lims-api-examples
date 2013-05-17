@@ -1,3 +1,3 @@
 .git/**
 *.orig
-
+.DS_Store
