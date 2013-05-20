@@ -64,17 +64,25 @@ module Lims::Examples
         API::new_step("Create a new tube rack")
         parameters = {:tube_rack => {:number_of_columns => 12,
                                      :number_of_rows => 8,
-                                     :tubes => {
-                                       :A1 => tubes_to_be_racked[0][:uuid],
-                                       :A2 => tubes_to_be_racked[1][:uuid]
-                                     }}}
+                                     :tubes => {}}}
         response = API::post(@routes["tube_racks"]["actions"]["create"], parameters)
         tube_rack_uuid = response["tube_rack"]["uuid"] 
+        tube_rack_update_url = response["tube_rack"]["actions"]["update"]
 
         # Add the tube rack in the order and start it
         API::new_step("Add the tube rack in the order and start it")
         role_tube_rack = type.to_s == "dna" ? ROLE_STOCK_DNA : ROLE_STOCK_RNA 
         parameters = {:items => {role_tube_rack => {tube_rack_uuid => {:event => :start, :batch_uuid => batch_uuid}}}}
+        API::put(@order_update_url, parameters)
+
+        # Add the tubes in the tube rack
+        API::new_step("Add the tubes in the tube rack")
+        parameters = {:tubes => {:A1 => tubes_to_be_racked[0][:uuid], :A2 => tubes_to_be_racked[1][:uuid]}}
+        API::put(tube_rack_update_url, parameters)
+
+        # Change the status of the tube rack
+        API::new_step("Change the status of the tube rack to done")
+        parameters = {:items => {role_tube_rack => {tube_rack_uuid => {:event => :complete}}}}
         API::put(@order_update_url, parameters)
 
         if type.to_s == "dna"

@@ -32,6 +32,8 @@ module Lims
       ROLE_TUBE_TO_BE_RACKED_RNA = "samples.extraction.manual.name_rna"
       ROLE_STOCK_RNA = "samples.extraction.manual.stock_rna"
       ROLE_STOCK_DNA = "samples.extraction.manual.stock_dna"
+      ROLE_STOCK = "samples.extraction.manual.stock"
+      ROLE_WORKING_DILUTIONS_PLATE = "samples.extraction.manual.workingdilutions_plate"
     end
   end
 end
