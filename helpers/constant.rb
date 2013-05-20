@@ -19,7 +19,7 @@ module Lims
 
       SOURCE_TUBE_ALIQUOT_TYPE = ALIQUOT_TYPE_NAP
 
-      ROLE_TUBE_TO_BE_EXTRACTED = "tube_to_be_extracted"
+#      ROLE_TUBE_TO_BE_EXTRACTED = "tube_to_be_extracted"
       ROLE_TUBE_TO_BE_EXTRACTED_NAP = "samples.extraction.manual.dna_and_rna.input_tube_nap"
       ROLE_TUBE_TO_BE_EXTRACTED_RNAP = "samples.extraction.manual.dna_and_rna.binding_input_tube_rnap"
       ROLE_BINDING_TUBE_TO_BE_EXTRACTED_NAP = "samples.extraction.manual.dna_and_rna.binding_input_tube_nap"
