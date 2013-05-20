@@ -251,34 +251,9 @@ module Lims::Examples
           }}
           API::put(order_update_url, parameters)
         end
-      end
 
-
-      private 
-
-      def add_barcode_to_resources(assets)
-        # Create barcodes
-        barcode_values = []
-        assets.each do |e|
-          API::new_step("Generate a new barcode")
-          barcode_values << API::mock_barcode_generation(e[:type], e[:content])
-        end
-
-        # Assign barcodes to the new tubes and spin columns
-        assets.each do |e|
-          API::new_step("Assign a barcode to the #{e[:type]} with the uuid=#{e[:uuid]}")
-          barcode(e[:uuid], barcode_values.shift) 
-        end
-
-        # Get the barcoded resources
-        assets.each do |e|
-          API::new_step("Get the barcoded #{e[:type]}")
-          API::get(e[:read])
-        end
-
-        # Printer service
-        API::new_step("Printer service")
-        API::mock_printer_service
+        @extracted_tubes_rna = extracted_tubes_rna
+        @extracted_tubes_dna = extracted_tubes_dna
       end
     end
   end

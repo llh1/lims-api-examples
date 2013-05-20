@@ -28,8 +28,8 @@ module Lims
       ROLE_BINDING_SPIN_COLUMN_RNA = "samples.extraction.manual.spin_column_rna"
       ROLE_EXTRACTED_TUBE_DNA = "samples.extraction.manual.extracted_tube_dna" 
       ROLE_EXTRACTED_TUBE_RNA = "samples.extraction.manual.extracted_tube_rna"
-      ROLE_NAME_DNA = "samples.extraction.manual.name_dna"
-      ROLE_NAME_RNA = "samples.extraction.manual.name_rna"
+      ROLE_TUBE_TO_BE_RACKED_DNA = "samples.extraction.manual.name_dna"
+      ROLE_TUBE_TO_BE_RACKED_RNA = "samples.extraction.manual.name_rna"
       ROLE_STOCK_RNA = "samples.extraction.manual.stock_rna"
       ROLE_STOCK_DNA = "samples.extraction.manual.stock_dna"
     end

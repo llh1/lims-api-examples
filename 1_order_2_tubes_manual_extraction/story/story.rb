@@ -2,6 +2,7 @@ require 'constant'
 require 'builder'
 require 'story/manual_extraction'
 require 'story/load_tubes_and_assign_batch'
+require 'story/racking'
 
 module Lims::Examples
   module ExampleManualExtraction
@@ -11,6 +12,7 @@ module Lims::Examples
 
       include LoadTubesAndAssignBatch
       include ManualExtraction
+      include Racking
 
       def initialize(barcodes)
         @barcodes = barcodes       
@@ -20,6 +22,7 @@ module Lims::Examples
         root
         load_tubes_and_assign_batch
         manual_extraction
+        racking
       end
 
       private
@@ -49,6 +52,31 @@ module Lims::Examples
         end
 
         {:source_tube_uuids => source_tube_uuids_array.flatten}
+      end
+
+      def add_barcode_to_resources(assets)
+        # Create barcodes
+        barcode_values = []
+        assets.each do |e|
+          API::new_step("Generate a new barcode")
+          barcode_values << API::mock_barcode_generation(e[:type], e[:content])
+        end
+
+        # Assign barcodes to the new tubes and spin columns
+        assets.each do |e|
+          API::new_step("Assign a barcode to the #{e[:type]} with the uuid=#{e[:uuid]}")
+          barcode(e[:uuid], barcode_values.shift) 
+        end
+
+        # Get the barcoded resources
+        assets.each do |e|
+          API::new_step("Get the barcoded #{e[:type]}")
+          API::get(e[:read])
+        end
+
+        # Printer service
+        API::new_step("Printer service")
+        API::mock_printer_service
       end
     end
   end
