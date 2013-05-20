@@ -34,6 +34,8 @@ module Lims
       ROLE_STOCK_DNA = "samples.extraction.manual.stock_dna"
       ROLE_STOCK = "samples.extraction.manual.stock"
       ROLE_WORKING_DILUTIONS_PLATE = "samples.extraction.manual.workingdilutions_plate"
+      ROLE_GEL_RNA = "samples.extraction.manual.gel_rna"
+      ROLE_GEL_DNA = "samples.extraction.manual.gel_dna"
     end
   end
 end
