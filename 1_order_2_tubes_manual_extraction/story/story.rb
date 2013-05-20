@@ -3,6 +3,9 @@ require 'builder'
 require 'story/manual_extraction'
 require 'story/load_tubes_and_assign_batch'
 require 'story/racking'
+require 'story/re_racking'
+require 'story/volume_check_working_dilutions'
+require 'story/gel'
 
 module Lims::Examples
   module ExampleManualExtraction
@@ -13,6 +16,9 @@ module Lims::Examples
       include LoadTubesAndAssignBatch
       include ManualExtraction
       include Racking
+      include ReRacking
+      include VolumeCheckWorkingDilutions
+      include Gel
 
       def initialize(barcodes)
         @barcodes = barcodes       
@@ -23,6 +29,10 @@ module Lims::Examples
         load_tubes_and_assign_batch
         manual_extraction
         racking
+        re_racking
+        volume_check
+        working_dilutions
+        gel
       end
 
       private

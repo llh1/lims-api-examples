@@ -76,6 +76,12 @@ module Lims::Examples
         role_tube_rack = type.to_s == "dna" ? ROLE_STOCK_DNA : ROLE_STOCK_RNA 
         parameters = {:items => {role_tube_rack => {tube_rack_uuid => {:event => :start, :batch_uuid => batch_uuid}}}}
         API::put(@order_update_url, parameters)
+
+        if type.to_s == "dna"
+          @tube_rack_dna_uuid = tube_rack_uuid
+        else 
+          @tube_rack_rna_uuid = tube_rack_uuid
+        end
       end
     end
   end
