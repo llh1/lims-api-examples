@@ -9,8 +9,8 @@ module Lims::Examples
         order_uuid = nil
         order = nil
         source_tube_uuids = []
-        tube_uuid = nil # just save the second tube uuid
 
+        # Get the tubes by their barcodes
         @barcodes.each_with_index do |barcode,index|
           API::new_step("Find tube by barcode (#{barcode})")
           parameters = {:search => {:description => "search for barcoded tube",
@@ -18,7 +18,7 @@ module Lims::Examples
                                     :criteria => {:label => {:position => "barcode",
                                                              :type => BARCODE_EAN13,
                                                              :value => barcode}}}}
-          search_response = API::post(@root_json["searches"]["actions"]["create"], parameters)
+          search_response = API::post(@routes["searches"]["actions"]["create"], parameters)
 
           API::new_step("Get the search result (tube)")
           result_url = search_response["search"]["actions"]["first"]
@@ -26,12 +26,14 @@ module Lims::Examples
           tube_uuid = result_response["tubes"].first["uuid"]
           source_tube_uuids << tube_uuid 
 
+          # Get the corresponding order
+          # Only one time for the first tube
           if index == 0
             API::new_step("Find the order by tube uuid")
             parameters = {:search => {:description => "search for order",
                                       :model => "order",
                                       :criteria => {:item => {:uuid => tube_uuid}}}}
-            search_response = API::post(@root_json["searches"]["actions"]["create"], parameters)
+            search_response = API::post(@routes["searches"]["actions"]["create"], parameters)
 
             API::new_step("Get the search results (order)")
             result_url = search_response["search"]["actions"]["first"]
@@ -41,18 +43,18 @@ module Lims::Examples
           end
         end
 
-        unless @batch_uuid
-          API::new_step("Create a new batch")
-          parameters = {:batch => {}}
-          response = API::post(@root_json["batches"]["actions"]["create"], parameters)
-          @batch_uuid = response["batch"]["uuid"]
-        end
+        second_tube_uuid = source_tube_uuids.last
+
+        API::new_step("Create a new batch")
+        parameters = {:batch => {}}
+        response = API::post(@routes["batches"]["actions"]["create"], parameters)
+        @batch_uuid = response["batch"]["uuid"]
 
         API::new_step("Find the order by tube uuid")
         parameters = {:search => {:description => "search for order",
                                   :model => "order",
-                                  :criteria => {:item => {:uuid => tube_uuid}}}}
-        search_response = API::post(@root_json["searches"]["actions"]["create"], parameters)
+                                  :criteria => {:item => {:uuid => second_tube_uuid}}}}
+        search_response = API::post(@routes["searches"]["actions"]["create"], parameters)
 
         API::new_step("Get the search results (order)")
         result_url = search_response["search"]["actions"]["first"]
@@ -80,12 +82,12 @@ module Lims::Examples
         API::put(order["actions"]["update"], parameters)
 
         result = search_orders_by_batch
-        result[:source_tube_uuids_array].each do |tube_uuid|
+        result[:source_tube_uuids].each do |tube_uuid|
           API::get("#{API::root}/#{tube_uuid}")
+          # Uncomment in production environment
           #API::get("#{API::root}/lims-laboratory/#{tube_uuid}")
         end
 
-        {:order_uuid => order_uuid, :order_update_url => order["actions"]["update"]}
         @order_uuid = order_uuid
         @order_update_url = order["actions"]["update"]
       end

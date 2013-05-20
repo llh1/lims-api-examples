@@ -14,7 +14,7 @@ module Lims
         opts.on("-o", "--output [OUTPUT]") { |v| options[:output] = v}
       end.parse!
 
-      output = options[:output] || "1_order_2_tubes_manual_extraction.json" 
+      output = options[:output] || "outputs/1_order_2_tubes_manual_extraction.json" 
       abort "API url is required" unless options[:url]
 
       API::set_root(options[:url] || "http://localhost:9292")
