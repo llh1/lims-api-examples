@@ -137,12 +137,13 @@ module Lims
               end
               if response
                 uuid = response.values.first["uuid"]
+                url = "#{API::root}/#{uuid}" if uuid
                 @counter += 1
                 begin
-                  get(uuid)
+                  get(url)
                 rescue
                   response = {}
-                  dump_request("get", uuid, nil, response) if uuid
+                  dump_request("get", url, nil, response) if uuid
                 end
               end
             elsif method == 'get'
@@ -161,7 +162,7 @@ module Lims
           end
 
           def new_call(method, url, parameters, response, next_stage = nil)
-            call = {:description => @step_description, :method => method, :url => "/#{url.sub(/^\//, "")}"}
+            call = {:description => @step_description, :method => method, :url => url}
             call[:request] = parameters if parameters
             call[:response] = response
             call[:next_stage] = next_stage if next_stage
