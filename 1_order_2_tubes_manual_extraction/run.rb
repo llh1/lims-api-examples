@@ -21,6 +21,8 @@ module Lims
       API::set_verbose(options[:verbose])
       API::set_output(output)
 
+      # These barcodes need to be the same as the barcode
+      # created in demo_seeding/setup_s2_environment script.
       tube_barcode_1 = "8800000000016"
       tube_barcode_2 = "8800000000017"
       story = Story.new([tube_barcode_1, tube_barcode_2])
