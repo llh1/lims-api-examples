@@ -82,6 +82,8 @@ module Lims::Examples
         API::put(order["actions"]["update"], parameters)
 
         result = search_orders_by_batch
+
+        API::new_step("Get the initial tubes in the order")
         result[:source_tube_uuids].each do |tube_uuid|
           API::get("#{API::root}/#{tube_uuid}")
           # Uncomment in production environment
