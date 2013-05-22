@@ -135,6 +135,10 @@ pipelines.each do |pipeline|
     STORE.with_session do |session|
       tube = Lims::LaboratoryApp::Laboratory::Tube.new
       tube << Lims::LaboratoryApp::Laboratory::Aliquot.new(
+        :type => Lims::LaboratoryApp::Laboratory::Aliquot::Solvent,
+        :quantity => 1000
+      )
+      tube << Lims::LaboratoryApp::Laboratory::Aliquot.new(
         :sample   => session[sample_uuids[i]],
         :type     => pipeline[:initial_type],
         :quantity => 1000
