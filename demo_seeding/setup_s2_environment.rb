@@ -78,6 +78,20 @@ sanger_barcodes = Object.new.tap do |o|
   end
 end
 
+
+tube_with_solvent_barcodes = Object.new.tap do |o|
+  class << o
+    attr_accessor :last_barcode
+  end
+  o.last_barcode = 10000
+
+  def o.pop
+    self.last_barcode += 1
+    "FR#{self.last_barcode}"
+  end
+end
+
+
 pipelines.each do |pipeline|
   if options[:verbose] 
     puts "Seed #{pipeline[:name]}" 
@@ -96,9 +110,9 @@ pipelines.each do |pipeline|
   end
 
   expiry_dates_amounts  = [
-    [Date::civil(2014,05,01), 10],
-    [Date::civil(2013,01,01), 10],
-    [Date::civil(2014,05,01), 0 ]
+    [Date::civil(2014,05,01), 10]
+#    [Date::civil(2013,01,01), 10],
+#    [Date::civil(2014,05,01), 0 ]
   ]
 
   expiry_dates_amounts.each do |expiry_date, amount|
@@ -129,15 +143,32 @@ pipelines.each do |pipeline|
     end.call
   end
 
+  # Create 1 tube with solvent (20 ul)
+  STORE.with_session do |session|
+    tube = Lims::LaboratoryApp::Laboratory::Tube.new
+    tube << Lims::LaboratoryApp::Laboratory::Aliquot.new(
+      :type => Lims::LaboratoryApp::Laboratory::Aliquot::Solvent,
+      :quantity => 20
+    )
+    session << tube
+    tube_uuid = session.uuid_for!(tube)
+
+    barcode_value = tube_with_solvent_barcodes.pop
+    labellable = Lims::LaboratoryApp::Labels::Labellable.new(:name => tube_uuid, :type => "resource") 
+    labellable["barcode"] = Lims::LaboratoryApp::Labels::Labellable::Label.new(:type => "ean13-barcode", :value => barcode_value)
+    session << labellable
+    labellable_uuid = session.uuid_for!(labellable)
+
+    if options[:verbose]
+      puts "Tube created with a solvent with ean13-barcode=#{barcode_value}"
+    end
+  end
+
   # Create 3 tubes
   labelled_tubes = [0, 1, 2]
   labelled_tubes.map! do |i|
     STORE.with_session do |session|
       tube = Lims::LaboratoryApp::Laboratory::Tube.new
-      tube << Lims::LaboratoryApp::Laboratory::Aliquot.new(
-        :type => Lims::LaboratoryApp::Laboratory::Aliquot::Solvent,
-        :quantity => 1000
-      )
       tube << Lims::LaboratoryApp::Laboratory::Aliquot.new(
         :sample   => session[sample_uuids[i]],
         :type     => pipeline[:initial_type],
