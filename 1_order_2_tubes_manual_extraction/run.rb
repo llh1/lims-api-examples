@@ -23,8 +23,8 @@ module Lims
 
       # These barcodes need to be the same as the barcode
       # created in demo_seeding/setup_s2_environment script.
-      tube_barcode_1 = "8800000000016"
-      tube_barcode_2 = "8800000000017"
+      tube_barcode_1 = "8800000000010"
+      tube_barcode_2 = "8800000000011"
       story = Story.new([tube_barcode_1, tube_barcode_2])
 
       API::start_recording
