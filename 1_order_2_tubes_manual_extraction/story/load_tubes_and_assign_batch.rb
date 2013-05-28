@@ -85,9 +85,9 @@ module Lims::Examples
 
         API::new_step("Get the initial tubes in the order")
         result[:source_tube_uuids].each do |tube_uuid|
-          API::get("#{API::root}/#{tube_uuid}")
+          #API::get("#{API::root}/#{tube_uuid}")
           # Uncomment in production environment
-          #API::get("#{API::root}/lims-laboratory/#{tube_uuid}")
+          API::get("#{API::root}/lims-laboratory/#{tube_uuid}")
         end
 
         @order_uuid = order_uuid
